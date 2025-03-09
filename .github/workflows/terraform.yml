@@ -31,7 +31,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: "1.5.0"  # Use uma versão válida
+          terraform_version: "1.5.0"  # Versão válida do Terraform
 
       # 5) Entra na pasta onde ficam os arquivos .tf (se estiver em "terraform/")
       - name: Enter terraform directory
@@ -48,16 +48,13 @@ jobs:
         working-directory: ./terraform
         run: terraform validate
 
-      # 8) Gera o plano
-
+      # 8) Gera o plano em uma única linha
       - name: Terraform Plan
         working-directory: ./terraform
-        run: terraform plan -out=tfplan -input=false \
-          -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}"
+        run: terraform plan -out=tfplan -input=false -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}"
 
-      # 9) Aplica o plano, se estivermos na branch main
+      # 9) Aplica o plano, se estivermos na branch main, em uma única linha
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: ./terraform
-        run: terraform apply -auto-approve -input=false \
-          -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}" tfplan
+        run: terraform apply -auto-approve -input=false -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}" tfplan
