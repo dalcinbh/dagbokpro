@@ -1,6 +1,7 @@
 variable "project_id" {
   description = "ID do projeto no Google Cloud"
   type        = string
+  default     = "dagbokj"
 }
 
 variable "region" {
