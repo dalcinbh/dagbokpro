@@ -51,7 +51,7 @@ jobs:
       # 8) Gera o plano
       - name: Terraform Plan
         working-directory: ./terraform
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan -input=false
 
       # 9) Aplica o plano, se estivermos na branch main
       - name: Terraform Apply
