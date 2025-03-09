@@ -18,5 +18,10 @@ variable "container_image" {
 variable "allowed_hosts" {
   description = "Hosts permitidos para a aplicação"
   type        = string
-  default     = "dagbok.pro,www.dagbok.pro,dagbok-pro-service-bqkuqlf6sq-uc.a.run.app"
+  default     = "dagbok.pro,www.dagbok.pro,dagbok-pro-service-996128961660.us-central1.run.app"
+}
+
+variable "django_secret_key" {
+  description = "Secret key para o Django"
+  type        = string
 }

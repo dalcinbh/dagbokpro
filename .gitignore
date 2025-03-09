@@ -5,36 +5,28 @@
 .terraform/
 terraform/.terraform/
 
-# Estado do Terraform (pode conter dados sensíveis)
+# Estado do Terraform (dados sensíveis)
 terraform.tfstate
 terraform.tfstate.backup
 
-# Arquivos de configuração personalizada (se aplicável)
+# Variáveis e arquivos de configuração
 *.tfvars
 
 # Arquivos de debug
 debug.log.terraform/
-terraform/.terraform/
-*.tfstate
-.terraform/
 
-
-logs
 # ==============================
-# Geral
+# Geral - Python & IDE
 # ==============================
-# Arquivos compilados do Python
 *.pyc
 *.pyo
 *.pyd
-
-#não versionar o que está no diretório text
-text/*
-
-# Cache do Python
 __pycache__/
 
-# Ambientes virtuais e Conda
+# Diretório text (não versionar)
+text/*
+
+# Ambientes virtuais
 env/
 venv/
 .myvenv/
@@ -51,27 +43,15 @@ venv/
 # ==============================
 # Django
 # ==============================
-# Banco de dados SQLite
 *.sqlite3
-
-# Logs
-*.log
-
-# Arquivos de migração (opcional, dependendo do projeto)
-# migrations/
 
 # ==============================
 # Next.js
 # ==============================
-# Dependências do Node.js
 node_modules/
-
-# Build e cache do Next.js
 .next/
 out/
 dist/
-
-# Variáveis de ambiente
 .env
 .env.local
 .env.development
@@ -80,5 +60,7 @@ dist/
 # ==============================
 # Outros
 # ==============================
-# Arquivos de configuração local
 *.local
+
+# Logs gerais
+logs

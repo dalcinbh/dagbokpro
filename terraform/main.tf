@@ -12,6 +12,7 @@ resource "google_cloud_run_service" "dagbok_service" {
     spec {
       containers {
         image = var.container_image
+
         env {
           name  = "ALLOWED_HOSTS"
           value = var.allowed_hosts
@@ -21,12 +22,8 @@ resource "google_cloud_run_service" "dagbok_service" {
           value = "False"
         }
         env {
-          name = "DJANGO_SECRET_KEY"
-          value_from {
-            secret_key_ref {
-              name = "DJANGO_SECRET_KEY"
-            }
-          }
+          name  = "DJANGO_SECRET_KEY"
+          value = var.django_secret_key
         }
       }
       timeout_seconds = 600
