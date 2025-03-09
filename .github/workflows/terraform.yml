@@ -49,12 +49,15 @@ jobs:
         run: terraform validate
 
       # 8) Gera o plano
+
       - name: Terraform Plan
         working-directory: ./terraform
-        run: terraform plan -out=tfplan -input=false
+        run: terraform plan -out=tfplan -input=false \
+          -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}"
 
       # 9) Aplica o plano, se estivermos na branch main
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: ./terraform
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve -input=false \
+          -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}" tfplan
