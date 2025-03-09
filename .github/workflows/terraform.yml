@@ -32,7 +32,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: '1.5.8'  # ou outra versão
+          terraform_version: '1.5.9'  # ou outra versão
 
       # 5) Entra na pasta onde ficam os arquivos .tf (se estiver em "terraform/")
       - name: Enter terraform directory
