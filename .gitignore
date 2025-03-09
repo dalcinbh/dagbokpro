@@ -12,6 +12,12 @@ terraform.tfstate.backup
 # Arquivos de configuração personalizada (se aplicável)
 *.tfvars
 
+# Arquivos de debug
+debug.log.terraform/
+terraform/.terraform/
+*.tfstate
+.terraform/
+
 
 logs
 # ==============================
@@ -76,10 +82,3 @@ dist/
 # ==============================
 # Arquivos de configuração local
 *.local
-
-# Arquivos de debug
-debug.log.terraform/
-terraform/.terraform/
-*.tfstate
-.terraform/
-terraform/
