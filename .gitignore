@@ -64,3 +64,6 @@ dist/
 
 # Logs gerais
 logs
+
+#credenciais gcloud
+gcloud/

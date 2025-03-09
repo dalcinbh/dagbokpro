@@ -1,4 +1,4 @@
-name: Terraform Deploy
+name: "Terraform Deploy"
 
 on:
   push:
@@ -10,23 +10,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do repositório
-        uses: actions/checkout@v2
+      # 1) Faz checkout do código
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Configurar Terraform
-        uses: hashicorp/setup-terraform@v1
+      # 2) Autentica no Google Cloud usando a service account
+      - name: Configure GCP auth
+        uses: google-github-actions/auth@v1
         with:
-          terraform_version: 1.5.0
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      - name: Inicializar Terraform
+      # 3) Configura o projeto e a região no gcloud (opcional, mas ajuda se for rodar gcloud)
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: "dagbokj"
+          install_components: kubectl
+
+      # 4) Instala Terraform
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: '1.5.8'  # ou outra versão
+
+      # 5) Entra na pasta onde ficam os arquivos .tf (se estiver em "terraform/")
+      - name: Enter terraform directory
+        run: cd terraform
+        shell: bash
+
+      # 6) Inicializa Terraform
+      - name: Terraform Init
+        working-directory: ./terraform
         run: terraform init
 
-      - name: Validar Terraform
+      # 7) Valida se a sintaxe do Terraform está OK
+      - name: Terraform Validate
+        working-directory: ./terraform
         run: terraform validate
 
-      - name: Planejar Terraform
+      # 8) Gera o plano
+      - name: Terraform Plan
+        working-directory: ./terraform
         run: terraform plan -out=tfplan
 
-      - name: Aplicar Terraform
+      # 9) Aplica o plano, se estivermos na branch main
+      - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
+        working-directory: ./terraform
         run: terraform apply -auto-approve tfplan
