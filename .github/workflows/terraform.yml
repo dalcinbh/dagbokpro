@@ -57,4 +57,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: ./terraform
-        run: terraform apply -auto-approve -input=false -var "django_secret_key=${{ secrets.DJANGO_SECRET_KEY }}" tfplan
+        run: terraform apply -auto-approve -input=false tfplan
