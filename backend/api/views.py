@@ -1,121 +1,161 @@
 import os
 import json
+import boto3
+import requests
+import traceback
 from datetime import datetime
-from pathlib import Path
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import requests
-from dotenv import load_dotenv
 
 # Carrega variáveis de ambiente
 load_dotenv()
 
+# Configura o cliente do S3
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    region_name=os.getenv('AWS_S3_REGION_NAME')
+)
+
 class ResumeAPIView(APIView):
     def get(self, request):
-        # Caminhos dos diretórios e arquivos
-        text_dir = Path(settings.BASE_DIR) / 'text'
-        json_path = Path(os.getenv('OUTPUT_JSON_FILE_PATH'))
+        try:
+            bucket_name = os.getenv('AWS_STORAGE_BUCKET_NAME')
+            text_folder = 'text/'
+            json_folder = 'json/'
 
-        # Cria o diretório pai do JSON se não existir
-        json_path.parent.mkdir(parents=True, exist_ok=True)
+            # Define o caminho do arquivo TXT de entrada
+            txt_input_file_key = text_folder + os.getenv('INPUT_TEXT_FILE_PATH')
+            # Define o caminho do arquivo JSON de saída            
+            json_output_file_key = json_folder + os.getenv('OUTPUT_JSON_FILE_PATH')
 
-        # Verifica se o JSON existe e sua data de modificação
-        json_mtime = json_path.stat().st_mtime if json_path.exists() else 0
-
-        # Verifica a data de modificação mais recente dos arquivos de texto
-        text_files = list(text_dir.glob('*'))
-        if not text_files:
-            return Response({"error": "No text files found in backend/text/"}, status=status.HTTP_404_NOT_FOUND)
-
-        latest_text_mtime = max(os.path.getmtime(file) for file in text_files)
-
-        # Se o JSON não existe ou os arquivos de texto são mais recentes, atualize o JSON
-        if not json_path.exists() or latest_text_mtime > json_mtime:
-            # Combina todos os arquivos de texto
-            combined_text = ""
-            for file_path in text_files:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    combined_text += f.read() + "\n"
-
-            print(f"Combined text sent to ChatGPT:\n{combined_text}")  # Log do texto enviado
-
-            # Chama a API do ChatGPT para processar o texto
-            api_key = os.getenv('API_KEY_DAGBOK')
-            if not api_key:
-                return Response({"error": "API key not found in .env"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            processed_data = self.process_with_chatgpt(combined_text, api_key)
-            if not processed_data:
-                # Se falhar ao processar com ChatGPT, retorna um JSON padrão
-                processed_data = {
-                    "title": "Adriano Alves",
-                    "summary": {"professional_summary": "Failed to process resume with ChatGPT"},
-                    "education": {},
-                    "experience": [],
-                    "skills": [],
-                    "additional_information": {}
-                }
-
-            # Salva o JSON
+            # Verifica se o arquivo TXT de entrada existe no S3
             try:
-                with open(json_path, 'w', encoding='utf-8') as f:
-                    json.dump(processed_data, f, indent=2)
-            except Exception as e:
-                print(f"Error saving JSON to {json_path}: {e}")
-                return Response({"error": f"Failed to save JSON: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)
+            except ClientError as e:
+                if e.response['Error']['Code'] == '404':
+                    return Response({"error": f"Input text file '{txt_input_file_key}' not found in S3 bucket"}, status=status.HTTP_404_NOT_FOUND)
+                else:
+                    print(f"Unexpected error checking input text file in S3: {e}")
+                    return Response({"error": f"Failed to check input text file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Lê o JSON e retorna
-        try:
-            with open(json_path, 'r', encoding='utf-8') as f:
-                content = f.read().strip()
-                if not content:  # Verifica se o arquivo está vazio
-                    return Response({"error": "JSON file is empty"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                resume_data = json.loads(content)
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON from {json_path}: {e}")
-            return Response({"error": "Invalid JSON format in dagbok.json"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Verifica se o arquivo JSON de saída já existe e se está atualizado
+            try:
+                json_obj = s3_client.head_object(Bucket=bucket_name, Key=json_output_file_key)
+                json_mtime = json_obj['LastModified'].timestamp()
+            except ClientError as e:
+                if e.response['Error']['Code'] == '404':
+                    print(f"JSON file '{json_output_file_key}' not found. Creating a new one...")
+                    json_mtime = 0  # Força a geração do JSON
+                else:
+                    print(f"Unexpected error checking JSON file in S3: {e}")
+                    return Response({"error": f"Failed to check JSON file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # Obtém a data de modificação mais recente do arquivo TXT de entrada
+            txt_mtime = s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)['LastModified'].timestamp()
+
+            # Se o JSON não existe ou o arquivo TXT é mais recente, atualiza o JSON
+            if not json_mtime or txt_mtime > json_mtime or True:
+                # Lê o conteúdo do arquivo TXT de entrada
+                response = s3_client.get_object(Bucket=bucket_name, Key=txt_input_file_key)
+                combined_text = response['Body'].read().decode('utf-8')
+
+                # Chama a API da DeepSeek para processar o texto
+                api_key = os.getenv('API_KEY_DEEPSEEK')  # Usa a chave da DeepSeek
+                if not api_key:
+                    return Response({"error": "API key not found in .env"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                processed_data = self.process_with_deepseek(combined_text, api_key)
+                if not processed_data:
+                    processed_data = {
+                        "title": "Adriano Alves",
+                        "summary": {"professional_summary": "Failed to process resume with DeepSeek"},
+                        "education": {},
+                        "experience": [],
+                        "skills": [],
+                        "additional_information": {}
+                    }
+
+                # Salva o JSON processado no S3
+                s3_client.put_object(
+                    Bucket=bucket_name,
+                    Key=json_output_file_key,
+                    Body=json.dumps(processed_data, indent=2),
+                    ContentType='application/json'
+                )
+
+            # Lê o conteúdo do arquivo JSON de saída
+            response = s3_client.get_object(Bucket=bucket_name, Key=json_output_file_key)
+            content = response['Body'].read().decode('utf-8').strip()
+            if not content:
+                return Response({"error": "JSON file is empty"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            resume_data = json.loads(content)
+
+            return Response(resume_data)
         except Exception as e:
-            print(f"Error reading JSON from {json_path}: {e}")
-            return Response({"error": f"Failed to read JSON: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            error_trace = traceback.format_exc()
+            print(f"Error in ResumeAPIView: {e}\nTraceback:\n{error_trace}")
+            return Response({"error": f"Internal server error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(resume_data)
-
-    def process_with_chatgpt(self, text, api_key):
+    def process_with_deepseek(self, text, api_key):
         try:
+            print("Processing text with DeepSeek API...", text)
+            url = "https://api.deepseek.com/v1/chat/completions"  # Verifique o endpoint correto
+            prompt = (
+                "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
+                "Extract and categorize the following sections:\n"
+                "- 'title': The person's name and professional title.\n"
+                "- 'summary': An object with 'professional_summary'.\n"
+                "- 'education': An object mapping institutions to degrees.\n"
+                "- 'experience': A list of work experiences.\n"
+                "- 'skills': A list of technical and soft skills.\n"
+                "- 'additional_information': Other relevant details.\n"
+                f"\nUnstructured resume text:\n{text}"
+            )
             headers = {
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json"
             }
-            prompt = (
-                "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
-                "Extract and categorize the following sections:\n"
-                "- 'title': The person's name and professional title (e.g., 'Adriano Alves - Software Engineer').\n"
-                "- 'summary': An object with 'professional_summary' (a brief overview of the person's career). Do NOT include a 'key_skills' field here, as skills should only be in the 'skills' section.\n"
-                "- 'education': An object where each key is an institution name, with the value being either a single string (e.g., 'Bachelor of Computer Science (2014-2018)') or a list of strings if multiple degrees are mentioned.\n"
-                "- 'experience': A list of objects, each describing a professional experience with the following fields: 'company' (company name), 'role', 'timeline', 'description', and 'highlights' (a list of achievements). Extract this from job history or narrative text.\n"
-                "- 'skills': A list of technical and soft skills mentioned anywhere in the text (e.g., ['JavaScript', 'Leadership']). This should be the only section containing skills.\n"
-                "- 'additional_information': An object with fields like 'languages', 'citizenship', 'availability', and 'interests' if present.\n"
-                "Ensure that 'experience' and 'skills' are always populated if relevant information exists in the text. If the text mentions jobs or roles, include them in the 'experience' section with full details. If skills are mentioned (e.g., 'experienced in JavaScript', 'leadership skills'), list them in the 'skills' section. "
-                "Return a valid JSON object with these sections.\n\n"
-                f"Unstructured resume text:\n\n{text}"
-            )
             payload = {
-                "model": "gpt-3.5-turbo",
-                "messages": [
-                    {"role": "system", "content": "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format."},
-                    {"role": "user", "content": prompt}
-                ],
+                "model": "deepseek-chat",  # Substitua pelo nome do modelo correto
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 500,
                 "temperature": 0.7
             }
-            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-            response.raise_for_status()
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()  # Lança uma exceção para códigos de status 4xx/5xx
 
+            # Log da resposta completa da API
+            print("API Response:", response.text)
+
+            # Tenta decodificar a resposta como JSON
             result = response.json()
-            content = result['choices'][0]['message']['content']
-            print(f"ChatGPT response:\n{content}")  # Log para depuração
-            return json.loads(content)  # Converte a resposta do ChatGPT (JSON em string) para um dicionário Python
+
+            # Verifica se a resposta contém a estrutura esperada
+            if not result.get('choices'):
+                print("No 'choices' found in the API response.")
+                return None
+
+            content = result['choices'][0].get('message', {}).get('content', '{}')
+            if not content:
+                print("No 'content' found in the API response.")
+                return None
+
+            # Tenta decodificar o conteúdo como JSON
+            return json.loads(content)
+        except requests.exceptions.HTTPError as e:
+            error_response = response.text if response else "No response from server"
+            print(f"HTTPError: {e}. Response: {error_response}")
+            return None
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}. Response content is not valid JSON.")
+            return None
         except Exception as e:
-            print(f"Error processing with ChatGPT: {e}")
+            error_trace = traceback.format_exc()
+            print(f"Error processing with DeepSeek: {e}\nTraceback:\n{error_trace}")
             return None

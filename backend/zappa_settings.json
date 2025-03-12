@@ -1,0 +1,9 @@
+{
+    "dev": {
+        "django_settings": "dagbok.settings",
+        "s3_bucket": "nome-do-bucket-criado",
+        "profile_name": "default",
+        "region": "us-east-1",
+        "role_arn": "arn:aws:iam::253490794432:role/ZappaLambdaExecutionRole"
+    }
+}
