@@ -8,16 +8,20 @@ terraform/.terraform/
 # Estado do Terraform (dados sensíveis)
 terraform.tfstate
 terraform.tfstate.backup
+.terraform.tfstate.lock.info
 
 # Variáveis e arquivos de configuração
 *.tfvars
+*.tfvars.json
 
 # Arquivos de debug
-debug.log.terraform/
+debug.log
+.terraform/debug.log
 
 # ==============================
 # Geral - Python & IDE
 # ==============================
+# Bytecode do Python
 *.pyc
 *.pyo
 *.pyd
@@ -32,6 +36,11 @@ venv/
 .myvenv/
 .venv/
 *.env/
+bin/
+lib/
+include/
+pip-selfcheck.json
+.Python
 
 # Arquivos temporários e de IDE
 *.log
@@ -39,11 +48,18 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+*.swp
+*.swo
 
 # ==============================
 # Django
 # ==============================
+# Banco de dados SQLite
 *.sqlite3
+
+# Arquivos de mídia e estáticos gerados
+media/
+staticfiles/
 
 # ==============================
 # Next.js
@@ -56,14 +72,22 @@ dist/
 .env.local
 .env.development
 .env.production
+.env.test
 
 # ==============================
 # Outros
 # ==============================
+# Arquivos locais
 *.local
 
 # Logs gerais
-logs
+logs/
 
-#credenciais gcloud
+# Credenciais gcloud
 gcloud/
+
+# Arquivos de configuração local
+.local/
+
+# Arquivos de cache
+.cache/
