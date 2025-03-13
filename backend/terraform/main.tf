@@ -2,8 +2,8 @@ provider "aws" {
   region = "us-east-2"
 }
 
-resource "aws_s3_bucket" "dagbok_lamba" {
-  bucket = "dagbok-lamba-api" # Nome do bucket
+resource "aws_s3_bucket" "dagbok_lambda" {
+  bucket = "dagbok-lambda" # Nome do bucket
 }
 
 resource "aws_iam_role" "lambda_exec_role" {
@@ -24,11 +24,11 @@ resource "aws_iam_role" "lambda_exec_role" {
 }
 
 resource "aws_lambda_function" "django_lambda" {
-  function_name = "dagbok-lamba" # Nome da função Lambda
+  function_name = "dagbok-lambda" # Nome da função Lambda
   handler       = "handler.lambda_handler"
   runtime       = "python3.9"
   role          = aws_iam_role.lambda_exec_role.arn
-  s3_bucket     = aws_s3_bucket.dagbok_lamba.bucket
+  s3_bucket     = aws_s3_bucket.dagbok_lambda.bucket
   s3_key        = "zappa-bucket/zappa_deploy.zip" # Prefixo e nome do arquivo ZIP
   timeout       = 300
   memory_size   = 512
