@@ -1,0 +1,226 @@
+{
+  "version": 4,
+  "terraform_version": "1.11.1",
+  "serial": 23,
+  "lineage": "6aa62e03-9364-05ab-f7f2-96b628d7c56f",
+  "outputs": {
+    "service_url": {
+      "value": "https://dagbok-pro-service-bqkuqlf6sq-uc.a.run.app",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "google_cloud_run_service",
+      "name": "dagbok_service",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "autogenerate_revision_name": false,
+            "id": "locations/us-central1/namespaces/dagbokj/services/dagbok-pro-service",
+            "location": "us-central1",
+            "metadata": [
+              {
+                "annotations": {},
+                "effective_annotations": {
+                  "run.googleapis.com/client-name": "gcloud",
+                  "run.googleapis.com/client-version": "513.0.0",
+                  "run.googleapis.com/ingress": "all",
+                  "run.googleapis.com/ingress-status": "all",
+                  "run.googleapis.com/operation-id": "d73e56d4-eb1f-4bc2-86e3-30585dbac35b",
+                  "run.googleapis.com/urls": "[\"https://dagbok-pro-service-996128961660.us-central1.run.app\",\"https://dagbok-pro-service-bqkuqlf6sq-uc.a.run.app\"]",
+                  "serving.knative.dev/creator": "adriano@ceviu.com.br",
+                  "serving.knative.dev/lastModifier": "adriano@ceviu.com.br"
+                },
+                "effective_labels": {
+                  "cloud.googleapis.com/location": "us-central1"
+                },
+                "generation": 3,
+                "labels": {},
+                "namespace": "dagbokj",
+                "resource_version": "AAYv7WFHLh8",
+                "self_link": "/apis/serving.knative.dev/v1/namespaces/996128961660/services/dagbok-pro-service",
+                "terraform_labels": {},
+                "uid": "b11416ea-1cac-4809-8345-1e4dd7cf0d69"
+              }
+            ],
+            "name": "dagbok-pro-service",
+            "project": "dagbokj",
+            "status": [
+              {
+                "conditions": [
+                  {
+                    "message": "",
+                    "reason": "",
+                    "status": "True",
+                    "type": "Ready"
+                  },
+                  {
+                    "message": "",
+                    "reason": "",
+                    "status": "True",
+                    "type": "ConfigurationsReady"
+                  },
+                  {
+                    "message": "",
+                    "reason": "",
+                    "status": "True",
+                    "type": "RoutesReady"
+                  }
+                ],
+                "latest_created_revision_name": "dagbok-pro-service-00003-jcf",
+                "latest_ready_revision_name": "dagbok-pro-service-00003-jcf",
+                "observed_generation": 3,
+                "traffic": [
+                  {
+                    "latest_revision": true,
+                    "percent": 100,
+                    "revision_name": "dagbok-pro-service-00003-jcf",
+                    "tag": "",
+                    "url": ""
+                  }
+                ],
+                "url": "https://dagbok-pro-service-bqkuqlf6sq-uc.a.run.app"
+              }
+            ],
+            "template": [
+              {
+                "metadata": [
+                  {
+                    "annotations": {
+                      "autoscaling.knative.dev/maxScale": "3",
+                      "run.googleapis.com/client-name": "gcloud",
+                      "run.googleapis.com/client-version": "513.0.0",
+                      "run.googleapis.com/startup-cpu-boost": "true"
+                    },
+                    "generation": 0,
+                    "labels": {
+                      "client.knative.dev/nonce": "sfdnasjhde",
+                      "run.googleapis.com/startupProbeType": "Default"
+                    },
+                    "name": "",
+                    "namespace": "",
+                    "resource_version": "",
+                    "self_link": "",
+                    "uid": ""
+                  }
+                ],
+                "spec": [
+                  {
+                    "container_concurrency": 80,
+                    "containers": [
+                      {
+                        "args": [],
+                        "command": [],
+                        "env": [
+                          {
+                            "name": "ALLOWED_HOSTS",
+                            "value": "dagbok.pro,www.dagbok.pro,dagbok-pro-service-996128961660.us-central1.run.app",
+                            "value_from": []
+                          },
+                          {
+                            "name": "DEBUG",
+                            "value": "False",
+                            "value_from": []
+                          },
+                          {
+                            "name": "DJANGO_SECRET_KEY",
+                            "value": "gbH72vDa6Ki2uOypLjObKvpoCmO7vav_0upGH5nl5_jdlc4tSJjuECmkoHpbqIXlEQo",
+                            "value_from": []
+                          }
+                        ],
+                        "env_from": [],
+                        "image": "us-central1-docker.pkg.dev/dagbokj/dagbok-repo/dagbok-pro-backend:latest",
+                        "liveness_probe": [],
+                        "name": "",
+                        "ports": [
+                          {
+                            "container_port": 8080,
+                            "name": "http1",
+                            "protocol": ""
+                          }
+                        ],
+                        "resources": [
+                          {
+                            "limits": {
+                              "cpu": "1000m",
+                              "memory": "512Mi"
+                            },
+                            "requests": {}
+                          }
+                        ],
+                        "startup_probe": [
+                          {
+                            "failure_threshold": 1,
+                            "grpc": [],
+                            "http_get": [],
+                            "initial_delay_seconds": 0,
+                            "period_seconds": 240,
+                            "tcp_socket": [
+                              {
+                                "port": 8080
+                              }
+                            ],
+                            "timeout_seconds": 240
+                          }
+                        ],
+                        "volume_mounts": [],
+                        "working_dir": ""
+                      }
+                    ],
+                    "service_account_name": "996128961660-compute@developer.gserviceaccount.com",
+                    "serving_state": "",
+                    "timeout_seconds": 600,
+                    "volumes": []
+                  }
+                ]
+              }
+            ],
+            "timeouts": null,
+            "traffic": [
+              {
+                "latest_revision": true,
+                "percent": 100,
+                "revision_name": "",
+                "tag": "",
+                "url": ""
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMiJ9"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "google_cloud_run_service_iam_member",
+      "name": "all_users",
+      "provider": "provider[\"registry.terraform.io/hashicorp/google\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "condition": [],
+            "etag": "BwYv4h0Rths=",
+            "id": "v1/projects/dagbokj/locations/us-central1/services/dagbok-pro-service/roles/run.invoker/allUsers",
+            "location": "us-central1",
+            "member": "allUsers",
+            "project": "dagbokj",
+            "role": "roles/run.invoker",
+            "service": "v1/projects/dagbokj/locations/us-central1/services/dagbok-pro-service"
+          },
+          "sensitive_attributes": [],
+          "private": "bnVsbA==",
+          "dependencies": [
+            "google_cloud_run_service.dagbok_service"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
