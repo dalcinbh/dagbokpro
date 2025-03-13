@@ -63,7 +63,13 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://dagbok:3000",
     "http://192.168.1.160:8000",
+    "https://api.dagbok.pro",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://api.dagbok.pro",
+]
+
 
 ROOT_URLCONF = 'dagbok.urls'
 
