@@ -1,9 +1,19 @@
 {
     "dev": {
+        "aws_region": "us-east-2",
         "django_settings": "dagbok.settings",
-        "s3_bucket": "nome-do-bucket-criado",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
         "profile_name": "default",
-        "region": "us-east-1",
-        "role_arn": "arn:aws:iam::253490794432:role/ZappaLambdaExecutionRole"
+        "project_name": "backend",
+        "runtime": "python3.10",
+        "s3_bucket": "zappa-dagbok",
+        "timeout_seconds": 300,
+        "memory_size": 512
     }
 }

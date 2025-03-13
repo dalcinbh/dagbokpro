@@ -103,6 +103,7 @@ class ResumeAPIView(APIView):
             print(f"Error in ResumeAPIView: {e}\nTraceback:\n{error_trace}")
             return Response({"error": f"Internal server error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
     def process_with_deepseek(self, text, api_key):
         try:
             print("Processing text with DeepSeek API...")
@@ -150,12 +151,14 @@ class ResumeAPIView(APIView):
             content = result['choices'][0]['message']['content']
             print(f"DeepSeek response:\n{content}")  # Log para depuração
 
-            # Tenta decodificar o conteúdo como JSON
-            try:
-                return json.loads(content)
-            except json.JSONDecodeError as e:
-                print(f"JSONDecodeError: {e}. Response content is not valid JSON.")
+            # Extrai o JSON do bloco de código Markdown
+            json_match = re.search(r'```json\s*({.*?})\s*```', content, re.DOTALL)
+            if not json_match:
+                print("No JSON found in the 'content'.")
                 return None
+
+            json_str = json_match.group(1)  # Extrai o JSON da string
+            return json.loads(json_str)  # Decodifica o JSON extraído
 
         except requests.exceptions.HTTPError as e:
             error_response = response.text if response else "No response from server"
@@ -164,10 +167,14 @@ class ResumeAPIView(APIView):
         except requests.exceptions.Timeout as e:
             print(f"TimeoutError: The request timed out. {e}")
             return None
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}. Response content is not valid JSON.")
+            return None
         except Exception as e:
             error_trace = traceback.format_exc()
             print(f"Error processing with DeepSeek: {e}\nTraceback:\n{error_trace}")
-            return None        
+            return None
+
 
     def process_with_chatgpt(self, text, api_key):
         try:
