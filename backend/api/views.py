@@ -16,12 +16,7 @@ from rest_framework import status
 load_dotenv()
 
 # Configura o cliente do S3
-s3_client = boto3.client(
-    's3',
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-    region_name=os.getenv('AWS_S3_REGION_NAME')
-)
+s3_client = boto3.client('s3', region_name=os.getenv('AWS_S3_REGION_NAME'))
 
 class ResumeAPIView(APIView):
     def get(self, request):
@@ -61,7 +56,7 @@ class ResumeAPIView(APIView):
             txt_mtime = s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)['LastModified'].timestamp()
 
             # Se o JSON não existe ou o arquivo TXT é mais recente, atualiza o JSON
-            if not json_mtime or txt_mtime > json_mtime or True:
+            if not json_mtime or txt_mtime > json_mtime:
                 # Lê o conteúdo do arquivo TXT de entrada
                 response = s3_client.get_object(Bucket=bucket_name, Key=txt_input_file_key)
                 combined_text = response['Body'].read().decode('utf-8')
@@ -71,7 +66,7 @@ class ResumeAPIView(APIView):
                 if not api_key:
                     return Response({"error": "API key not found in .env"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-                processed_data = self.process_with_deepseek(combined_text, api_key)
+                processed_data = self.process_with_chatgpt(combined_text, api_key)
                 if not processed_data:
                     processed_data = {
                         "title": "Adriano Alves",
