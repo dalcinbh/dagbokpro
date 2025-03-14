@@ -52,7 +52,7 @@ export default function Home() {
   useEffect(() => {
     const fetchResume = async () => {
       try {
-        const response = await fetch('http://dagbok:8000/api/resume/');
+        const response = await fetch('https://api.dagbok.pro/resume/');
         const data: ResumeData = await response.json();
         setResumeData(data);
         setLoading(false);
