@@ -4,7 +4,8 @@ provider "aws" {
 
 # IAM Role para o Lambda
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "dagbok-django-dev-ZappaLambdaExecutionRole"
+  name                  = "dagbok-django-dev-ZappaLambdaExecutionRole"
+  force_detach_policies = true # Permite atualizar a role sem erros
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -20,28 +21,71 @@ resource "aws_iam_role" "lambda_execution_role" {
   })
 }
 
-# Política para permissões do Lambda
+# Política personalizada baseada na zappa-permissions
 resource "aws_iam_role_policy" "lambda_policy" {
-  name = "lambda_execution_policy"
+  name = "zappa-permissions"
   role = aws_iam_role.lambda_execution_role.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Resource = "arn:aws:logs:us-east-2:*:*"
+        Effect   = "Allow"
+        Action   = ["logs:*"]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["lambda:InvokeFunction"]
+        Resource = ["*"]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["xray:PutTraceSegments", "xray:PutTelemetryRecords"]
+        Resource = ["*"]
       },
       {
         Effect = "Allow"
         Action = [
-          "s3:*"
+          "ec2:AttachNetworkInterface",
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeInstances",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DetachNetworkInterface",
+          "ec2:ModifyNetworkInterfaceAttribute",
+          "ec2:ResetNetworkInterfaceAttribute"
         ]
-        Resource = "arn:aws:s3:::dagbok-lambda/*"
+        Resource = ["*"]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:*"]
+        Resource = "arn:aws:s3:::*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["kinesis:*"]
+        Resource = "arn:aws:kinesis:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["sns:*"]
+        Resource = "arn:aws:sns:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["sqs:*"]
+        Resource = "arn:aws:sqs:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["dynamodb:*"]
+        Resource = "arn:aws:dynamodb:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["route53:*"]
+        Resource = ["*"]
       }
     ]
   })
