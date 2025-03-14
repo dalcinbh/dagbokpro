@@ -2,10 +2,10 @@ provider "aws" {
   region = "us-east-2"
 }
 
-# IAM Role para o Lambda
+# IAM Role para o Lambda (existente)
 resource "aws_iam_role" "lambda_execution_role" {
   name                  = "dagbok-django-dev-ZappaLambdaExecutionRole"
-  force_detach_policies = true # Permite atualizar a role sem erros
+  force_detach_policies = true # Permite atualizar políticas sem erros
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -19,6 +19,11 @@ resource "aws_iam_role" "lambda_execution_role" {
       }
     ]
   })
+
+  # Ignora a criação se a role já existir
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # Política personalizada baseada na zappa-permissions
