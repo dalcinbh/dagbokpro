@@ -1,6 +1,6 @@
-'use client';
+'use client'; // Mantém o comportamento client-side para interatividade (exportação)
 
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import Head from '../components/Head';
 import AboutMe from '../components/AboutMe';
 import Education from '../components/Education';
@@ -11,6 +11,7 @@ import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+// Interfaces
 interface Summary {
   professional_summary?: string;
 }
@@ -44,25 +45,21 @@ interface ResumeData {
   [key: string]: any;
 }
 
-export default function Home() {
-  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const resumeRef = useRef<HTMLDivElement>(null);
+// Função para buscar dados (executada no build)
+async function fetchResumeData(): Promise<ResumeData> {
+  const res = await fetch('https://api.dagbok.pro/resume/', {
+    cache: 'force-cache', // Garante que os dados sejam estáticos no build
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch resume data');
+  }
+  return res.json();
+}
 
-  useEffect(() => {
-    const fetchResume = async () => {
-      try {
-        const response = await fetch('https://api.dagbok.pro/resume/');
-        const data: ResumeData = await response.json();
-        setResumeData(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching resume:', error);
-        setLoading(false);
-      }
-    };
-    fetchResume();
-  }, []);
+export default async function Home() {
+  const resumeData = await fetchResumeData();
+
+  const resumeRef = useRef<HTMLDivElement>(null);
 
   const exportToPDF = async () => {
     console.log('Export to PDF triggered');
@@ -71,9 +68,9 @@ export default function Home() {
         const canvas = await html2canvas(resumeRef.current, {
           scale: 2,
           useCORS: true,
-          ignoreElements: (element) => element.className.includes('no-print'), // Ignora elementos com classe no-print, se necessário
-          logging: true, // Habilita logs para depuração
-          foreignObjectRendering: false, // Desativa rendering de objetos externos que podem causar erros
+          ignoreElements: (element) => element.className.includes('no-print'),
+          logging: true,
+          foreignObjectRendering: false,
         });
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -84,7 +81,6 @@ export default function Home() {
         pdf.save('resume.pdf');
       } catch (error) {
         console.error('PDF Export Error:', error);
-        // Fallback para impressão, se falhar
         console.log('Falling back to window.print()');
         window.print();
       }
@@ -102,7 +98,6 @@ export default function Home() {
 
     const children: Paragraph[] = [];
 
-    // Title
     children.push(
       new Paragraph({
         text: resumeData.title || 'My Resume',
@@ -111,7 +106,6 @@ export default function Home() {
       })
     );
 
-    // About Me
     if (resumeData.summary?.professional_summary) {
       children.push(
         new Paragraph({
@@ -147,7 +141,6 @@ export default function Home() {
       }
     }
 
-    // Education
     if (resumeData.education) {
       children.push(
         new Paragraph({
@@ -165,7 +158,6 @@ export default function Home() {
       });
     }
 
-    // Experience
     if (resumeData.experience) {
       children.push(
         new Paragraph({
@@ -196,7 +188,6 @@ export default function Home() {
       });
     }
 
-    // Skills
     if (resumeData.skills) {
       children.push(
         new Paragraph({
@@ -214,7 +205,6 @@ export default function Home() {
       });
     }
 
-    // Additional Information (Citizenship)
     if (resumeData.additional_information?.citizenship) {
       children.push(
         new Paragraph({
@@ -304,26 +294,9 @@ export default function Home() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <p className="text-xl text-gray-700">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!resumeData) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <p className="text-xl text-red-600">Error loading resume data.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-3xl mx-auto">
-        {/* Botão de Exportação */}
         <div className="mb-6 flex justify-end space-x-4">
           <button
             onClick={exportToPDF}
@@ -345,7 +318,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Conteúdo do Currículo */}
         <div ref={resumeRef}>
           <Head title={resumeData.title} />
           {resumeData.summary && (
@@ -359,7 +331,9 @@ export default function Home() {
           <Skills items={resumeData.skills} />
           {resumeData.additional_information && (
             <section className="my-6 bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">Additional Information</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                Additional Information
+              </h2>
               {resumeData.additional_information.citizenship && (
                 <p className="mt-2 text-gray-700">
                   <strong className="text-gray-900">Citizenship:</strong>{' '}
