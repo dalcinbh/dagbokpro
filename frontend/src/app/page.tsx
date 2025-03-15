@@ -1,4 +1,5 @@
-'use client'; // Mantém o comportamento client-side para interatividade (exportação)
+// Client-side: renderização e exportação
+'use client';
 
 import { useRef } from 'react';
 import Head from '../components/Head';
@@ -6,7 +7,9 @@ import AboutMe from '../components/AboutMe';
 import Education from '../components/Education';
 import Experience from '../components/Experience';
 import Skills from '../components/Skills';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
+
+// Server-side: fetch de dados para SSG
+import { Document, Packer, Paragraph, HeadingLevel } from 'docx';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -42,7 +45,6 @@ interface ResumeData {
   experience?: ExperienceEntry[];
   skills?: string[];
   additional_information?: AdditionalInformation;
-  [key: string]: any;
 }
 
 // Função para buscar dados (executada no build)
@@ -56,9 +58,13 @@ async function fetchResumeData(): Promise<ResumeData> {
   return res.json();
 }
 
-export default async function Home() {
+// Componente server-side para buscar os dados
+export default async function FetchResumeData() {
   const resumeData = await fetchResumeData();
+  return <Home resumeData={resumeData} />;
+}
 
+function Home({ resumeData }: { resumeData: ResumeData | null }) {
   const resumeRef = useRef<HTMLDivElement>(null);
 
   const exportToPDF = async () => {
@@ -319,17 +325,17 @@ export default async function Home() {
         </div>
 
         <div ref={resumeRef}>
-          <Head title={resumeData.title} />
-          {resumeData.summary && (
+          <Head title={resumeData?.title} />
+          {resumeData?.summary && (
             <AboutMe
               content={resumeData.summary}
               additionalInfo={resumeData.additional_information}
             />
           )}
-          <Education items={resumeData.education} />
-          <Experience items={resumeData.experience} />
-          <Skills items={resumeData.skills} />
-          {resumeData.additional_information && (
+          <Education items={resumeData?.education} />
+          <Experience items={resumeData?.experience} />
+          <Skills items={resumeData?.skills} />
+          {resumeData?.additional_information && (
             <section className="my-6 bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 Additional Information

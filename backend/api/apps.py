@@ -1,4 +1,11 @@
+
 from django.apps import AppConfig
+"""
+This module defines the configuration for the 'api' application.
+
+Classes:
+    ApiConfig: Configures the 'api' application with default settings.
+"""
 
 
 class ApiConfig(AppConfig):

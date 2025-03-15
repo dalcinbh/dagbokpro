@@ -1,5 +1,26 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""
+This script serves as the entry point for administrative tasks in a Django project.
+
+It sets the default Django settings module to 'dagbok.settings' and attempts to
+execute command-line tasks using Django's management utility.
+
+Functions:
+    main(): Sets the DJANGO_SETTINGS_MODULE environment variable and executes
+            Django's command-line utility for administrative tasks.
+
+Usage:
+    Run this script from the command line to perform various Django administrative
+    tasks, such as running the development server, applying migrations, and more.
+
+Example:
+    $ python manage.py runserver
+
+Raises:
+    ImportError: If Django is not installed or not available on the PYTHONPATH
+                 environment variable, or if the virtual environment is not activated.
+"""
+
 import os
 import sys
 

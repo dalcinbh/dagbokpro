@@ -1,23 +1,41 @@
+
 @import "tailwindcss";
 
 :root {
+  /* 
+    DESCRIPTION: This file contains global CSS variables and styles for the frontend application.
+    VARIABLE: --background
+    USAGE: Defines the background color for the application.
+    DEFAULT VALUE: #ffffff (white)
+  */
   --background: #ffffff;
   --foreground: #171717;
 }
-
+/**
+ * This function takes an array of numbers and returns the sum of all the numbers in the array.
+ *
+ * @param {number[]} numbers - An array of numbers to be summed.
+ * @returns {number} The sum of all the numbers in the array.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
+/**
+ * This function takes an array of numbers and returns the sum of all the elements.
+ *
+ * @param {number[]} numbers - An array of numbers to be summed.
+ * @returns {number} The sum of all the numbers in the array.
+ */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
+
 
 body {
   background: var(--background);
