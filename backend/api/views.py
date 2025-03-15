@@ -1,4 +1,30 @@
+
 import os
+"""
+ResumeAPIView is a Django Rest Framework API view that processes a resume text file stored in an S3 bucket,
+converts it to a structured JSON format using either the DeepSeek or ChatGPT API, and returns the JSON data.
+
+Methods:
+    get(self, request):
+        Handles GET requests to the API endpoint. It checks if the input text file exists in the S3 bucket,
+        processes it using the specified AI API if necessary, and returns the structured JSON data.
+
+    process_with_deepseek(self, text, api_key):
+        Processes the given unstructured resume text using the DeepSeek API and returns the structured JSON data.
+        Args:
+            text (str): The unstructured resume text.
+            api_key (str): The API key for accessing the DeepSeek API.
+        Returns:
+            dict: The structured JSON data extracted from the resume text, or None if an error occurs.
+
+    process_with_chatgpt(self, text, api_key):
+        Processes the given unstructured resume text using the ChatGPT API and returns the structured JSON data.
+        Args:
+            text (str): The unstructured resume text.
+            api_key (str): The API key for accessing the ChatGPT API.
+        Returns:
+            dict: The structured JSON data extracted from the resume text, or None if an error occurs.
+"""
 import re
 import json
 import boto3
@@ -12,25 +38,25 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-# Carrega variáveis de ambiente
+# Load environment variables from .env file
 load_dotenv()
 
-# Configura o cliente do S3
+# Configure the S3 client with the specified region
 s3_client = boto3.client('s3', region_name=os.getenv('AWS_S3_REGION_NAME'))
 
 class ResumeAPIView(APIView):
     def get(self, request):
         try:
+            # Retrieve bucket name and folder paths from environment variables
             bucket_name = os.getenv('AWS_STORAGE_BUCKET_NAME')
             text_folder = 'text/'
             json_folder = 'json/'
 
-            # Define o caminho do arquivo TXT de entrada
+            # Define the input TXT file path and output JSON file path
             txt_input_file_key = text_folder + os.getenv('INPUT_TEXT_FILE_PATH')
-            # Define o caminho do arquivo JSON de saída            
             json_output_file_key = json_folder + os.getenv('OUTPUT_JSON_FILE_PATH')
 
-            # Verifica se o arquivo TXT de entrada existe no S3
+            # Check if the input TXT file exists in the S3 bucket
             try:
                 s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)
             except ClientError as e:
@@ -40,29 +66,29 @@ class ResumeAPIView(APIView):
                     print(f"Unexpected error checking input text file in S3: {e}")
                     return Response({"error": f"Failed to check input text file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # Verifica se o arquivo JSON de saída já existe e se está atualizado
+            # Check if the output JSON file exists and is up-to-date
             try:
                 json_obj = s3_client.head_object(Bucket=bucket_name, Key=json_output_file_key)
                 json_mtime = json_obj['LastModified'].timestamp()
             except ClientError as e:
                 if e.response['Error']['Code'] == '404':
                     print(f"JSON file '{json_output_file_key}' not found. Creating a new one...")
-                    json_mtime = 0  # Força a geração do JSON
+                    json_mtime = 0  # Force JSON generation
                 else:
                     print(f"Unexpected error checking JSON file in S3: {e}")
                     return Response({"error": f"Failed to check JSON file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # Obtém a data de modificação mais recente do arquivo TXT de entrada
+            # Get the last modified date of the input TXT file
             txt_mtime = s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)['LastModified'].timestamp()
 
-            # Se o JSON não existe ou o arquivo TXT é mais recente, atualiza o JSON
+            # If the JSON file does not exist or the TXT file is more recent, update the JSON
             if not json_mtime or txt_mtime > json_mtime:
-                # Lê o conteúdo do arquivo TXT de entrada
+                # Read the content of the input TXT file
                 response = s3_client.get_object(Bucket=bucket_name, Key=txt_input_file_key)
                 combined_text = response['Body'].read().decode('utf-8')
 
-                # Chama a API da DeepSeek para processar o texto
-                api_key = os.getenv('API_KEY_DAGBOK')  # Usa a chave da IA
+                # Call the DeepSeek API to process the text
+                api_key = os.getenv('API_KEY_DAGBOK')  # Use the AI key
                 if not api_key:
                     return Response({"error": "API key not found in .env"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -77,7 +103,7 @@ class ResumeAPIView(APIView):
                         "additional_information": {}
                     }
 
-                # Salva o JSON processado no S3
+                # Save the processed JSON to S3
                 s3_client.put_object(
                     Bucket=bucket_name,
                     Key=json_output_file_key,
@@ -85,7 +111,7 @@ class ResumeAPIView(APIView):
                     ContentType='application/json'
                 )
 
-            # Lê o conteúdo do arquivo JSON de saída
+            # Read the content of the output JSON file
             response = s3_client.get_object(Bucket=bucket_name, Key=json_output_file_key)
             content = response['Body'].read().decode('utf-8').strip()
             if not content:
@@ -98,7 +124,6 @@ class ResumeAPIView(APIView):
             print(f"Error in ResumeAPIView: {e}\nTraceback:\n{error_trace}")
             return Response({"error": f"Internal server error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
     def process_with_deepseek(self, text, api_key):
         try:
             print("Processing text with DeepSeek API...")
@@ -109,6 +134,7 @@ class ResumeAPIView(APIView):
             prompt = (
                 "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
                 "Extract and categorize the following sections:\n"
+                "Return in English a JSON object with the following sections:\n"
                 "- 'title': The person's name and professional title (e.g., 'Adriano Alves - Software Engineer').\n"
                 "- 'summary': An object with 'professional_summary' (a brief overview of the person's career). Do NOT include a 'key_skills' field here, as skills should only be in the 'skills' section.\n"
                 "- 'education': An object where each key is an institution name, with the value being either a single string (e.g., 'Bachelor of Computer Science (2014-2018)') or a list of strings if multiple degrees are mentioned.\n"
@@ -120,7 +146,7 @@ class ResumeAPIView(APIView):
                 f"Unstructured resume text:\n\n{text}"
             )
             payload = {
-                "model": "deepseek-chat",  # Substitua pelo modelo correto do DeepSeek
+                "model": "deepseek-chat",  # Replace with the correct DeepSeek model
                 "messages": [
                     {"role": "system", "content": "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format."},
                     {"role": "user", "content": prompt}
@@ -128,32 +154,32 @@ class ResumeAPIView(APIView):
                 "temperature": 0.7
             }
 
-            # Envia a solicitação à API do DeepSeek
+            # Send the request to the DeepSeek API
             response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=payload, timeout=3000)
-            response.raise_for_status()  # Lança uma exceção para códigos de status 4xx/5xx
+            response.raise_for_status()  # Raise an exception for 4xx/5xx status codes
 
-            # Log da resposta completa da API
+            # Log the full API response
             print("API Response:", response.text)
 
-            # Decodifica a resposta como JSON
+            # Decode the response as JSON
             result = response.json()
 
-            # Verifica se a resposta contém a estrutura esperada
+            # Check if the response contains the expected structure
             if not result.get('choices'):
                 print("No 'choices' found in the API response.")
                 return None
 
             content = result['choices'][0]['message']['content']
-            print(f"DeepSeek response:\n{content}")  # Log para depuração
+            print(f"DeepSeek response:\n{content}")  # Log for debugging
 
-            # Extrai o JSON do bloco de código Markdown
+            # Extract JSON from the Markdown code block
             json_match = re.search(r'```json\s*({.*?})\s*```', content, re.DOTALL)
             if not json_match:
                 print("No JSON found in the 'content'.")
                 return None
 
-            json_str = json_match.group(1)  # Extrai o JSON da string
-            return json.loads(json_str)  # Decodifica o JSON extraído
+            json_str = json_match.group(1)  # Extract JSON string
+            return json.loads(json_str)  # Decode the extracted JSON
 
         except requests.exceptions.HTTPError as e:
             error_response = response.text if response else "No response from server"
@@ -169,7 +195,6 @@ class ResumeAPIView(APIView):
             error_trace = traceback.format_exc()
             print(f"Error processing with DeepSeek: {e}\nTraceback:\n{error_trace}")
             return None
-
 
     def process_with_chatgpt(self, text, api_key):
         try:
@@ -200,25 +225,25 @@ class ResumeAPIView(APIView):
                 "temperature": 0.7
             }
 
-            # Envia a solicitação à API com timeout
+            # Send the request to the ChatGPT API with a timeout
             response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=3000)
-            response.raise_for_status()  # Lança uma exceção para códigos de status 4xx/5xx
+            response.raise_for_status()  # Raise an exception for 4xx/5xx status codes
 
-            # Log da resposta completa da API
+            # Log the full API response
             print("API Response:", response.text)
 
-            # Decodifica a resposta como JSON
+            # Decode the response as JSON
             result = response.json()
 
-            # Verifica se a resposta contém a estrutura esperada
+            # Check if the response contains the expected structure
             if not result.get('choices'):
                 print("No 'choices' found in the API response.")
                 return None
 
             content = result['choices'][0]['message']['content']
-            print(f"ChatGPT response:\n{content}")  # Log para depuração
+            print(f"ChatGPT response:\n{content}")  # Log for debugging
 
-            # Tenta decodificar o conteúdo como JSON
+            # Try to decode the content as JSON
             try:
                 return json.loads(content)
             except json.JSONDecodeError as e:
