@@ -14,4 +14,12 @@ module.exports = {
     corePlugins: {
       preflight: true,
     },
+    theme: {
+      extend: {
+        fontFamily: {
+          montserrat: ['Montserrat', 'sans-serif'],
+          poppins: ['Poppins', 'sans-serif'],
+        },
+      },
+    },
   };
