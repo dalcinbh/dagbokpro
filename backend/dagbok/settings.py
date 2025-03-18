@@ -1,54 +1,53 @@
 
 from pathlib import Path
 """
-Django settings for the Dagbok project.
+Django settings for the dagbok project.
 
-This module contains the settings and configuration for the Django project,
-including installed applications, middleware, authentication backends, CORS
-settings, REST framework settings, and static file storage configuration.
+This module contains the settings for the Django project, including configurations
+for installed apps, middleware, authentication, database, internationalization, 
+static files, and third-party integrations.
 
-Environment variables are loaded from a .env file using the `dotenv` package.
+Environment variables are loaded from a .env file using the `python-dotenv` package.
 
 Attributes:
     BASE_DIR (Path): The base directory of the project.
-    SECRET_KEY (str): The secret key for the Django project, loaded from the environment.
-    PROFILE_PAGE_URL (str): The URL for the profile page, loaded from the environment.
-    DEBUG (bool): Debug mode flag, loaded from the environment.
+    SECRET_KEY (str): The secret key for the Django project, loaded from environment variables.
+    PROFILE_PAGE_URL (str): The URL for the profile page, loaded from environment variables.
+    DEBUG (bool): Debug mode flag, loaded from environment variables.
     ALLOWED_HOSTS (list): List of allowed hosts for the Django project.
     INSTALLED_APPS (list): List of installed applications for the Django project.
     MIDDLEWARE (list): List of middleware for the Django project.
-    SITE_ID (int): The site ID for the django-allauth configuration.
+    SITE_ID (int): The ID of the Django site.
     AUTHENTICATION_BACKENDS (tuple): Tuple of authentication backends for the Django project.
+    ACCOUNT_SIGNUP_FIELDS (dict): Dictionary of required fields for account signup.
     CORS_ALLOWED_ORIGINS (list): List of allowed origins for CORS.
     CSRF_TRUSTED_ORIGINS (list): List of trusted origins for CSRF.
     CORS_ALLOW_CREDENTIALS (bool): Flag to allow credentials for CORS.
-    REST_FRAMEWORK (dict): Configuration for the Django REST framework.
-    SIMPLE_JWT (dict): Configuration for the SimpleJWT package.
-    ROOT_URLCONF (str): The root URL configuration for the Django project.
-    ACCOUNT_LOGOUT_ON_GET (bool): Flag to log out on GET request for django-allauth.
-    ACCOUNT_EMAIL_VERIFICATION (str): Email verification setting for django-allauth.
+    REST_FRAMEWORK (dict): Configuration for Django REST Framework.
+    SIMPLE_JWT (dict): Configuration for SimpleJWT.
+    ROOT_URLCONF (str): The root URL configuration module.
+    ACCOUNT_LOGOUT_ON_GET (bool): Flag to log out on GET request.
+    ACCOUNT_EMAIL_VERIFICATION (str): Email verification setting for accounts.
     LOGIN_REDIRECT_URL (str): URL to redirect to after login.
-    TEMPLATES (list): List of template configurations for the Django project.
-    WSGI_APPLICATION (str): The WSGI application for the Django project.
-    DATABASES (dict): Database configuration for the Django project.
-    AUTH_PASSWORD_VALIDATORS (list): List of password validators for the Django project.
-    LANGUAGE_CODE (str): The language code for the Django project.
-    TIME_ZONE (str): The time zone for the Django project.
+    TEMPLATES (list): List of template configurations.
+    WSGI_APPLICATION (str): The WSGI application module.
+    DATABASES (dict): Database configurations.
+    AUTH_PASSWORD_VALIDATORS (list): List of password validators.
+    LANGUAGE_CODE (str): The language code for the project.
+    TIME_ZONE (str): The time zone for the project.
     USE_I18N (bool): Flag to enable internationalization.
     USE_TZ (bool): Flag to enable time zone support.
-    AWS_ACCESS_KEY_ID (str): AWS access key ID for S3 storage, loaded from the environment.
-    AWS_SECRET_ACCESS_KEY (str): AWS secret access key for S3 storage, loaded from the environment.
-    AWS_STORAGE_BUCKET_NAME (str): AWS storage bucket name for S3 storage, loaded from the environment.
-    AWS_S3_REGION_NAME (str): AWS S3 region name for S3 storage, loaded from the environment.
+    AWS_ACCESS_KEY_ID (str): AWS access key ID, loaded from environment variables.
+    AWS_SECRET_ACCESS_KEY (str): AWS secret access key, loaded from environment variables.
+    AWS_STORAGE_BUCKET_NAME (str): AWS S3 storage bucket name, loaded from environment variables.
+    AWS_S3_REGION_NAME (str): AWS S3 region name, loaded from environment variables.
     STATICFILES_STORAGE (str): Storage backend for static files.
     STATIC_URL (str): URL for serving static files.
     DEFAULT_AUTO_FIELD (str): Default primary key field type.
 """
-
-
-
-from dotenv import load_dotenv  # Importe load_dotenv
+from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 # Carregue as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -56,22 +55,19 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
-PROFILE_PAGE_URL = os.getenv('PROFILE_PAGE_URL', 'http://dagbok:3000')
+PROFILE_PAGE_URL = os.getenv('PROFILE_PAGE_URL', 'https://auth.dagbok.pro/app1/profile')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Converte DEBUG para booleano
 
-ALLOWED_HOSTS = ['*']  # Permita todos os hosts para facilitar o desenvolvimento
-
+ALLOWED_HOSTS = ['auth.dagbok.pro', 'localhost', '127.0.0.1']  # Restringir hosts para segurança
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -86,23 +82,22 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',  # Provedor Google
-    'allauth.socialaccount.providers.linkedin_oauth2',  # Provedor LinkedIn
-    'corsheaders',  # Para CORS
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.linkedin_oauth2',
+    'corsheaders',
     'api',
-    'storages',  # Adicione 'storages' para usar o S3
+    'storages',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
 
@@ -113,16 +108,20 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+# Configurações novas do django-allauth (substitui as depreciadas)
+ACCOUNT_SIGNUP_FIELDS = {
+    'username': {'required': True},
+    'email': {'required': True},
+}
+
+# Configurações do django-cors-headers
 CORS_ALLOWED_ORIGINS = [
-    "http://dagbok:3000",
-    "http://192.168.1.160:8000",
-    "https://api.dagbok.pro",
+    "https://auth.dagbok.pro/app1",  # Frontend Next.js
 ]
-
 CSRF_TRUSTED_ORIGINS = [
-    "https://api.dagbok.pro",
+    "https://auth.dagbok.pro/app1",  # Frontend
+    "https://auth.dagbok.pro/app2",  # Backend
 ]
-
 CORS_ALLOW_CREDENTIALS = True
 
 # Configurações do REST Framework e dj-rest-auth
@@ -133,8 +132,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Configurações do SimpleJWT (opcional, para tokens JWT)
-from datetime import timedelta
+# Configurações do SimpleJWT
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
@@ -142,11 +140,10 @@ SIMPLE_JWT = {
 
 ROOT_URLCONF = 'dagbok.urls'
 
-
 # URLs de redirecionamento para logins sociais
 ACCOUNT_LOGOUT_ON_GET = True
-ACCOUNT_EMAIL_VERIFICATION = "none"  # Desativa verificação de e-mail para simplificar
-LOGIN_REDIRECT_URL = PROFILE_PAGE_URL  # Redireciona após login
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Desativa verificação de e-mail
+LOGIN_REDIRECT_URL = PROFILE_PAGE_URL
 
 TEMPLATES = [
     {
@@ -166,18 +163,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dagbok.wsgi.application'
 
-
 # Database
+# Substitua 'dummy' por um banco de dados real (ex.: SQLite para desenvolvimento)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.dummy'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -193,21 +188,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 # Configurações do S3 para arquivos estáticos
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -219,6 +204,4 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
