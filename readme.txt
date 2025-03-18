@@ -39,7 +39,6 @@ Result, both backend and frontend working
 API DJANGO BACKEND: https://auth.dagbok.pro/app2
 NEXT FRONTEND: https://auth.dagbok.pro/app1
 
-
 ##Personal Note
 
 Tribute to DJ Avicii

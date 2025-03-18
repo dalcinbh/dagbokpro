@@ -85,11 +85,13 @@ SITE_ID = 1  # Required for allauth
 
 
 # allauth Settings (Modern Configuration) =======================================
-ACCOUNT_ALLOW_SIGNUPS = False              # Disable manual signups completely
-ACCOUNT_LOGIN_METHODS = ['email']          # Required for social auth flow
-ACCOUNT_SIGNUP_FIELDS = []                 # Explicit empty list for social-only
-ACCOUNT_USERNAME_REQUIRED = False          # Maintain explicit username disable
-ACCOUNT_EMAIL_REQUIRED = True              # Ensure email collection from social
+ACCOUNT_ALLOW_SIGNUPS = False  # Disable manual signups completely
+ACCOUNT_LOGIN_METHODS = ['email']  # Required for social auth flow
+
+# Use the new ACCOUNT_SIGNUP_FIELDS setting to define required fields
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+
+# Redirect URL after login
 LOGIN_REDIRECT_URL = os.getenv('PROFILE_PAGE_URL', 'https://auth.dagbok.pro/app1')
 
 # Social Authentication Providers ===============================================
