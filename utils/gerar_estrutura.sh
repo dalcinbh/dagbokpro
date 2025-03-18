@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Define o diretório base do projeto (nível acima de utils)
-BASE_DIR="/home/adriano/dev/agiliza/dagbok/backend"
-LOGS_DIR="/home/adriano/dev/agiliza/dagbok/logs"
+# Define o diretório base do projeto
+BASE_DIR="/home/adriano/dev/agiliza/dagbok"
+LOGS_DIR="$BASE_DIR/logs"
+EXCLUDE_FILE="$BASE_DIR/utils/exlude_dirs.txt"
 OUTPUT_FILE="$LOGS_DIR/estrutura_com_conteudo.txt"
 
 # Cria o diretório logs se não existir
@@ -10,6 +11,18 @@ mkdir -p "$LOGS_DIR"
 
 # Limpa o arquivo de saída se existir
 > "$OUTPUT_FILE"
+
+# Monta a lista de exclusões dinamicamente
+EXCLUDES=()
+if [[ -f "$EXCLUDE_FILE" ]]; then
+    while IFS= read -r line; do
+        if [[ $line == DIR=* ]]; then
+            EXCLUDES+=("--exclude=${line#DIR=}")
+        elif [[ $line == FILE=* ]]; then
+            EXCLUDES+=("--exclude=${line#FILE=}")
+        fi
+    done < "$EXCLUDE_FILE"
+fi
 
 # Função para verificar se um arquivo é binário
 is_binary() {
@@ -21,8 +34,8 @@ is_binary() {
     fi
 }
 
-# Usa `/usr/bin/fdfind` para buscar arquivos, respeitando o .gitignore e excluindo pastas irrelevantes
-/usr/bin/fdfind --type f --hidden --exclude '.git' --exclude 'node_modules' --exclude 'venv' --exclude 'dist' . "$BASE_DIR" | while read -r file; do
+# Usa `/usr/bin/fdfind` para buscar arquivos, respeitando o .gitignore e excluindo arquivos/diretórios listados
+/usr/bin/fdfind --type f --hidden "${EXCLUDES[@]}" . "$BASE_DIR" | while read -r file; do
     # Ignorar arquivos binários
     if is_binary "$file"; then
         echo "Ignorando binário: $file"
