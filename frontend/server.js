@@ -4,21 +4,22 @@ const path = require('path');
 
 const app = express();
 
-// Servir os arquivos estáticos do build
+// Serve static files from the 'out' directory
 app.use(express.static(path.join(__dirname, 'out')));
 
-// Proxy para o frontend Next.js (se necessário, mas geralmente não precisa com exportação estática)
-app.use('/app1', createProxyMiddleware({
-    target: 'http://localhost:3000',
-    changeOrigin: true,
+// Proxy for the Django backend
+app.use('/app2', createProxyMiddleware({
+  target: 'http://dagbok:8000',
+  changeOrigin: true,
 }));
 
-// Proxy para o backend Django
-app.use('/app2', createProxyMiddleware({
-    target: 'http://localhost:8000',
-    changeOrigin: true,
-}));
+// Handle any other routes by serving index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'out', 'index.html'));
+});
+
 
 app.listen(80, () => {
-    console.log('Proxy rodando na porta 80');
+  console.log('Proxy running on port 80');
+  console.log('Serving static files from:', path.join(__dirname, 'out'));
 });

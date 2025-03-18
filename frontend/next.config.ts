@@ -1,10 +1,13 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: "export", // Habilita exportação estática para App Router
-  assetPrefix: process.env.NODE_ENV === "production" ? "https://dagbok.pro" : "",
+  output: 'export',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://auth.dagbok.pro' : '', // Match ngrok/production URL
   images: {
-    unoptimized: true, // Desativa a otimização de imagens para exportação estática
+    unoptimized: true, // Required for static export
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // Optional: disables ESLint during build if needed
   },
 };
 

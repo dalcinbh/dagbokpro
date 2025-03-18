@@ -266,7 +266,7 @@ class ResumeAPIView(APIView):
             print(f"Error processing with ChatGPT: {e}\nTraceback:\n{error_trace}")
             return None
 
-@csrf_exempt  # Desative CSRF para teste (remova em produção)
+#@csrf_exempt  # Desative CSRF para teste (remova em produção)
 def google_login(request):
     if request.method == 'POST':
         token = request.POST.get('access_token')
