@@ -36,8 +36,8 @@ em frontend rodar: sudo /home/adriano/.nvm/versions/node/v21.5.0/bin/node server
 Proxy rodando na porta 80
 ngrok start --all
 Result, both backend and frontend working
-https://auth.dagbok.pro/app2/resume/
-https://auth.dagbok.pro/app1
+API DJANGO BACKEND: https://auth.dagbok.pro/app2
+NEXT FRONTEND: https://auth.dagbok.pro/app1
 
 
 ##Personal Note
