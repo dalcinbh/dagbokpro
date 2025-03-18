@@ -1,4 +1,4 @@
-// src/app/login/page.tsx
+// src/components/Login.tsx
 
 // Marks the component as client-side for interactivity
 'use client';
@@ -7,19 +7,23 @@
 import Image from 'next/image';
 import { GoogleOAuthProvider, useGoogleLogin, TokenResponse } from '@react-oauth/google';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 // Client-side login component
 const LoginComponent = () => {
+  const router = useRouter();
+
   // Handle successful Google login
   const handleGoogleLoginSuccess = async (tokenResponse: TokenResponse) => {
     try {
       const response = await axios.post(
-        'https://auth.dagbok.pro/app2/api/auth/google/', // Proxy to Django backend
+        'https://auth.dagbok.pro/app2/api/auth/google/',
         { access_token: tokenResponse.access_token },
         { headers: { 'Content-Type': 'application/json' } }
       );
       console.log('Login successful:', response.data);
-      window.location.href = 'https://auth.dagbok.pro/app1'; // Redirect after login
+      localStorage.setItem('authToken', response.data.token); // Armazena o token (ajuste conforme backend)
+      router.push('/app1'); // Redireciona para a home
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -56,7 +60,6 @@ const LoginComponent = () => {
 
 // Wrapper to handle Google OAuth provider
 export default function Login() {
-  // Replace with your Google Client ID from environment variables or a .env file
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'your-google-client-id-here';
 
   if (!clientId) {

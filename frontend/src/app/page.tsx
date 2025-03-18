@@ -4,7 +4,7 @@
 'use client';
 
 // Imports
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Head from '../components/Head';
 import AboutMe from '../components/AboutMe';
 import Education from '../components/Education';
@@ -49,10 +49,11 @@ interface ResumeData {
 }
 
 // Fetch resume data on the server (Server Component)
-async function getResumeData() {
+async function getResumeData(token?: string) {
   const res = await fetch('https://api.dagbok.pro/resume/', {
-    cache: 'force-cache', // Static data at build time
-    next: { revalidate: 3600 }, // Revalidate every hour (optional)
+    cache: 'force-cache',
+    next: { revalidate: 3600 },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!res.ok) throw new Error('Failed to fetch resume data');
   return res.json();
@@ -272,10 +273,26 @@ function Home({ resumeData }: { resumeData: ResumeData }) {
   );
 }
 
-// Server Component to fetch data
-const ResumeDataFetcher = async () => {
-  const resumeData = await getResumeData();
-  return <Home resumeData={resumeData} />;
-};
+// Protected component to handle authentication
+export default function ProtectedHome() {
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-export default ResumeDataFetcher;
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      window.location.href = '/login'; // Redireciona para login se não houver token
+      return;
+    }
+
+    getResumeData(token)
+      .then((data) => setResumeData(data))
+      .catch((error) => console.error('Error fetching resume data:', error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Carregando...</div>;
+  if (!resumeData) return <div>Erro ao carregar dados. Redirecionando para login...</div>;
+
+  return <Home resumeData={resumeData} />;
+}

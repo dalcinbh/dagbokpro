@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DAGBOK
 
-## Getting Started
+DAGBOK is an open-source platform designed to be a professional diary where users can document their daily work experiences, learnings, attended lectures, completed courses, earned certificates, soft skills, hard skills, new job experiences, and career milestones. Using Artificial Intelligence, the system automatically generates a well-structured resume based on the user’s diary entries.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Professional Diary:** Log daily work experiences, skills, and achievements.
+- **AI-Powered Resume Generation:** Automatically creates a well-structured resume based on diary entries.
+- **Smart Updates:** If the diary is more up-to-date than the resume, the system reprocesses the resume to include the latest skills and experiences.
+- **Intuitive Web Interface:** Easily manage and update your professional history.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How It Works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Users log into their DAGBOK profile.
+2. They add new entries to their professional diary (courses, certifications, skills, job transitions, etc.).
+3. The system checks if the diary is more up-to-date than the resume.
+4. If needed, the AI reprocesses the resume to reflect the latest changes.
+5. The updated resume is displayed in the user’s profile.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technologies Used
 
-## Learn More
+- **Backend:** Django (Python)
+- **Frontend:** Next.js (React & TypeScript)
+- **AI Integration:** Processes diary entries into structured resume data
 
-To learn more about Next.js, take a look at the following resources:
+## Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/dagbok.git
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+##Instrucions for start in local machine
+rb
+rf
+em frontend rodar: sudo /home/adriano/.nvm/versions/node/v21.5.0/bin/node server.js
+Proxy rodando na porta 80
+ngrok start --all
+Result, both backend and frontend working
+API DJANGO BACKEND: https://auth.dagbok.pro/app2
+NEXT FRONTEND: https://auth.dagbok.pro/app1
 
-## Deploy on Vercel
+##Personal Note
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tribute to DJ Avicii
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The name DAGBOK comes from the Swedish word dagbok, which means "diary" in the Swedish language. I specifically chose a Swedish word as a tribute to one of my biggest idols, DJ Avicii. His loss in 2018 was not only deeply saddening for me but also a devastating moment for the entire electronic music world.
+
+Avicii was much more than just a DJ—he was a visionary, a storyteller, and one of the greatest electronic music composers in history. His songs carried deep emotions, powerful messages, and touched millions of people around the globe. His music has been a huge inspiration in my journey, and naming this project with a Swedish word is my way of honoring his incredible legacy.
+
+"One day you'll leave this world behind, so live a life you will remember." – Avicii, The Nights
+
+Contact
+dagbok@dagbok.pro

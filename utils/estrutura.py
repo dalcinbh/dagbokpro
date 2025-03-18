@@ -1,88 +1,56 @@
 import os
 
+# Configurações
 BASE_DIR = "/home/adriano/dev/agiliza/dagbok"
 LOGS_DIR = os.path.join(BASE_DIR, "logs")
-EXCLUDE_FILE = os.path.join(BASE_DIR, "utils", "exclude")
-OUTPUT_FILE = os.path.join(LOGS_DIR, "estrutura_com_conteudo.txt")
+INCLUDE_FILES = os.path.join(BASE_DIR, "utils", "include_files.txt")  # Lista de arquivos a serem incluídos
+OUTPUT_FILE = os.path.join(LOGS_DIR, "conteudo_arquivos_relevantes.txt")  # Arquivo de saída
 
-# Cria logs se não existir
+# Cria o diretório de logs se não existir
 os.makedirs(LOGS_DIR, exist_ok=True)
 
-# Carrega EXCLUDES
-exclude_dirs = set()
-exclude_files = set()
-
-if os.path.isfile(EXCLUDE_FILE):
-    with open(EXCLUDE_FILE, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith("DIR="):
-                # Ex.: DIR=.github  -> BASE_DIR/.github
-                relative_path = line[4:].lstrip("./")
-                exclude_dirs.add(os.path.join(BASE_DIR, relative_path))
-            elif line.startswith("FILE="):
-                # Ex.: FILE=frontend/package-lock.json -> BASE_DIR/frontend/package-lock.json
-                relative_path = line[5:].lstrip("./")
-                exclude_files.add(os.path.join(BASE_DIR, relative_path))
-
-# Se quiser ignorar utils mesmo que não esteja no exclude:
-# exclude_dirs.add(os.path.join(BASE_DIR, "utils"))
-
-def is_ignored_file(file_path: str) -> bool:
+# Função para carregar a lista de arquivos a serem incluídos
+def load_include_list(file_path: str) -> list:
     """
-    Retorna True se o arquivo deve ser ignorado.
-    - Está listado em exclude_files
-    - Tem extensão .svg
-    - É binário (contém caractere nulo no início)
+    Carrega um arquivo de texto com os caminhos dos arquivos a serem incluídos (um por linha).
+    Retorna uma lista com os caminhos completos.
     """
-    if file_path in exclude_files:
-        return True
-    if file_path.endswith(".svg"):
-        return True
-    try:
-        with open(file_path, "rb") as bfile:
-            chunk = bfile.read(1024)
-            if b"\x00" in chunk:  # Sinal de arquivo binário
-                return True
-    except:
-        # Se não conseguir ler, ignore também
-        return True
-    return False
+    include_list = []
+    if os.path.isfile(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:  # Ignora linhas vazias
+                    include_list.append(line)  # Adiciona o caminho completo à lista
+    return include_list
 
+# Carrega a lista de arquivos a serem incluídos
+include_files = load_include_list(INCLUDE_FILES)
+
+# Gera o arquivo de saída
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
-    out.write("Arquivos relevantes (conteúdo):\n\n")
+    out.write("Conteúdo dos arquivos relevantes:\n\n")
 
-    # Caminha no BASE_DIR
-    for root, dirs, files in os.walk(BASE_DIR, topdown=True):
-        # Se o root for ou começar com algum diretorio do exclude, pula
-        if any(root == d or root.startswith(d + os.sep) for d in exclude_dirs):
+    # Processa cada arquivo na lista de inclusão
+    for file_path in include_files:
+        # Verifica se o arquivo existe
+        if not os.path.isfile(file_path):
+            print(f"Arquivo não encontrado: {file_path}")
             continue
 
-        # Também filtramos dirs no nível atual
-        dirs[:] = [d for d in dirs
-                   if os.path.join(root, d) not in exclude_dirs]
+        # Escreve o cabeçalho do arquivo no arquivo de saída
+        rel_path = os.path.relpath(file_path, BASE_DIR)
+        out.write("==========================================\n")
+        out.write(f"Arquivo: {rel_path}\n")
+        out.write("==========================================\n")
 
-        for filename in files:
-            fullpath = os.path.join(root, filename)
+        # Tenta escrever o conteúdo do arquivo
+        try:
+            with open(file_path, "r", encoding="utf-8") as fin:
+                out.write(fin.read())
+        except Exception as e:
+            out.write(f"[Erro ao ler o arquivo: {e}]\n")
 
-            # Se for ignorado, pula
-            if is_ignored_file(fullpath):
-                print(f"Ignorando arquivo: {fullpath}")
-                continue
-
-            # Escreve o cabeçalho
-            rel = os.path.relpath(fullpath, BASE_DIR)
-            out.write("==========================================\n")
-            out.write(f"Arquivo: {rel}\n")
-            out.write("==========================================\n")
-
-            # Tenta escrever o conteúdo
-            try:
-                with open(fullpath, "r", encoding="utf-8") as fin:
-                    out.write(fin.read())
-            except Exception as e:
-                out.write(f"[Erro ao ler o arquivo: {e}]\n")
-
-            out.write("\n\n")
+        out.write("\n\n")
 
 print(f"Arquivo {OUTPUT_FILE} gerado com sucesso!")
