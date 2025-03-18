@@ -23,9 +23,8 @@ load_dotenv()  # Load environment variables from .env file
 
 # Base Directory Configuration ==================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
-STATIC_ROOT = os.path.join(BASE_DIR, 'files')
-
-STATICFILES_DIRS = [BASE_DIR / "files"]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Diretório para coletar arquivos estáticos em produção
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'files')]  # Diretório onde os arquivos estáticos estão localizados
 STATIC_URL = '/static/'
 
 # Security Settings =============================================================
@@ -96,7 +95,7 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 # Redirect URL after login
 LOGIN_REDIRECT_URL = os.getenv('PROFILE_PAGE_URL', 'https://auth.dagbok.pro/app1')
 
-# Social Authentication Providers ===============================================
+# Social Authentication Providers ===============================================rb
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['profile', 'email'],

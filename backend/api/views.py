@@ -1,5 +1,28 @@
-
 import os
+import re
+import json
+import boto3
+import requests
+import traceback
+from datetime import datetime
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
+from django.conf import settings
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from allauth.socialaccount.models import SocialToken, SocialAccount
+from django.contrib.auth import login
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Configure the S3 client with the specified region
+s3_client = boto3.client('s3', region_name=os.getenv('AWS_S3_REGION_NAME'))
+
 """
 ResumeAPIView is a Django Rest Framework API view that processes a resume text file stored in an S3 bucket,
 converts it to a structured JSON format using either the DeepSeek or ChatGPT API, and returns the JSON data.
@@ -25,25 +48,6 @@ Methods:
         Returns:
             dict: The structured JSON data extracted from the resume text, or None if an error occurs.
 """
-import re
-import json
-import boto3
-import requests
-import traceback
-from datetime import datetime
-from botocore.exceptions import ClientError
-from dotenv import load_dotenv
-from django.conf import settings
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Configure the S3 client with the specified region
-s3_client = boto3.client('s3', region_name=os.getenv('AWS_S3_REGION_NAME'))
-
 class ResumeAPIView(APIView):
     def get(self, request):
         try:
@@ -261,3 +265,24 @@ class ResumeAPIView(APIView):
             error_trace = traceback.format_exc()
             print(f"Error processing with ChatGPT: {e}\nTraceback:\n{error_trace}")
             return None
+
+@csrf_exempt  # Desative CSRF para teste (remova em produção)
+def google_login(request):
+    if request.method == 'POST':
+        token = request.POST.get('access_token')
+        if not token:
+            return JsonResponse({'error': 'No access token provided'}, status=400)
+
+        # Validação do token com Google (pode usar OAuth2Client do allauth)
+        client = OAuth2Client('google', request)
+        try:
+            # Aqui você pode validar o token com o Google, mas o allauth já faz isso
+            # Para simplificar, use o token para criar ou obter a conta
+            social_token = SocialToken(token=token)
+            social_account = SocialAccount.objects.from_token(token, 'google')
+            user = social_account.user
+            login(request, user)  # Faz login do usuário
+            return JsonResponse({'message': 'Login successful', 'user': user.email})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid method'}, status=405)
