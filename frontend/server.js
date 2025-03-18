@@ -5,13 +5,13 @@ const app = express();
 
 // Rota para /app1 (porta 3000)
 app.use('/app1', createProxyMiddleware({
-    target: 'http://localhost:3000',
+    target: 'http://dagbok:3000',
     changeOrigin: true,
 }));
 
 // Rota para /app2 (porta 8000)
 app.use('/app2', createProxyMiddleware({
-    target: 'http://localhost:8000',
+    target: 'http://dagbok:8000',
     changeOrigin: true,
 }));
 
