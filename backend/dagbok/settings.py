@@ -25,6 +25,8 @@ load_dotenv()  # Load environment variables from .env file
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_ROOT = os.path.join(BASE_DIR, 'files')
 
+STATICFILES_DIRS = [BASE_DIR / "files"]
+STATIC_URL = '/static/'
 
 # Security Settings =============================================================
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')

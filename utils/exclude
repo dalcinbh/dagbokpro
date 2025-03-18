@@ -12,6 +12,7 @@ DIR=./frontend/.next
 DIR=./frontend/out
 DIR=./utils
 
+
 FILE=./frontend/package-lock.json
 FILE=./backend/api/__init__.py
 FILE=./backend/dagbok/__init__.py
