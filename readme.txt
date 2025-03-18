@@ -29,6 +29,16 @@ DAGBOK is an open-source platform designed to be a professional diary where user
    ```bash
    git clone https://github.com/yourusername/dagbok.git
 
+##Instrucions for start in local machine
+rb
+rf
+em frontend rodar: sudo /home/adriano/.nvm/versions/node/v21.5.0/bin/node server.js
+Proxy rodando na porta 80
+ngrok start --all
+Result, both backend and frontend working
+https://auth.dagbok.pro/app2/resume/
+https://auth.dagbok.pro/app1
+
 
 ##Personal Note
 
