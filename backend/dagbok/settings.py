@@ -1,5 +1,3 @@
-
-from pathlib import Path
 """
 Django settings for the dagbok project.
 
@@ -45,6 +43,8 @@ Attributes:
     STATIC_URL (str): URL for serving static files.
     DEFAULT_AUTO_FIELD (str): Default primary key field type.
 """
+
+from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
@@ -60,7 +60,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
-PROFILE_PAGE_URL = os.getenv('PROFILE_PAGE_URL', 'https://auth.dagbok.pro/app1/profile')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Converte DEBUG para booleano
@@ -116,11 +115,11 @@ ACCOUNT_SIGNUP_FIELDS = {
 
 # Configurações do django-cors-headers
 CORS_ALLOWED_ORIGINS = [
-    "https://auth.dagbok.pro/app1",  # Frontend Next.js
+    "https://auth.dagbok.pro",  # Domínio base sem caminhos
 ]
+
 CSRF_TRUSTED_ORIGINS = [
-    "https://auth.dagbok.pro/app1",  # Frontend
-    "https://auth.dagbok.pro/app2",  # Backend
+    "https://auth.dagbok.pro",  # Domínio base sem caminhos
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -143,7 +142,7 @@ ROOT_URLCONF = 'dagbok.urls'
 # URLs de redirecionamento para logins sociais
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_EMAIL_VERIFICATION = "none"  # Desativa verificação de e-mail
-LOGIN_REDIRECT_URL = PROFILE_PAGE_URL
+LOGIN_REDIRECT_URL = os.getenv('PROFILE_PAGE_URL', 'https://auth.dagbok.pro/app1/profile')
 
 TEMPLATES = [
     {
@@ -164,7 +163,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'dagbok.wsgi.application'
 
 # Database
-# Substitua 'dummy' por um banco de dados real (ex.: SQLite para desenvolvimento)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
