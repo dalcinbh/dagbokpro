@@ -17,11 +17,14 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 
+
 # Environment Setup =============================================================
 load_dotenv()  # Load environment variables from .env file
 
 # Base Directory Configuration ==================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_ROOT = os.path.join(BASE_DIR, 'files')
+
 
 # Security Settings =============================================================
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
