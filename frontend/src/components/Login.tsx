@@ -1,15 +1,15 @@
-// src/components/Login.tsx
+// src/app/login/page.tsx
 
 // Marks the component as client-side for interactivity
 'use client';
 
 // Imports
 import Image from 'next/image';
-import { useGoogleLogin, TokenResponse } from '@react-oauth/google'; // Correctly typed TokenResponse
+import { GoogleOAuthProvider, useGoogleLogin, TokenResponse } from '@react-oauth/google';
 import axios from 'axios';
 
-// Component
-const Login = () => {
+// Client-side login component
+const LoginComponent = () => {
   // Handle successful Google login
   const handleGoogleLoginSuccess = async (tokenResponse: TokenResponse) => {
     try {
@@ -54,4 +54,18 @@ const Login = () => {
   );
 };
 
-export default Login;
+// Wrapper to handle Google OAuth provider
+export default function Login() {
+  // Replace with your Google Client ID from environment variables or a .env file
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'your-google-client-id-here';
+
+  if (!clientId) {
+    return <div>Error: Google Client ID is not configured. Check your .env file.</div>;
+  }
+
+  return (
+    <GoogleOAuthProvider clientId={clientId}>
+      <LoginComponent />
+    </GoogleOAuthProvider>
+  );
+}

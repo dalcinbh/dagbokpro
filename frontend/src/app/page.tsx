@@ -1,10 +1,10 @@
 // src/app/page.tsx
 
-// Marks the component as client-side rendered for interactivity
+// Marks the component as client-side rendered for interactivity (export buttons)
 'use client';
 
 // Imports
-import { useRef } from 'react'; // useEffect removed as it's not needed
+import { useRef } from 'react';
 import Head from '../components/Head';
 import AboutMe from '../components/AboutMe';
 import Education from '../components/Education';
@@ -46,6 +46,16 @@ interface ResumeData {
   experience?: ExperienceEntry[];
   skills?: string[];
   additional_information?: AdditionalInformation;
+}
+
+// Fetch resume data on the server (Server Component)
+async function getResumeData() {
+  const res = await fetch('https://api.dagbok.pro/resume/', {
+    cache: 'force-cache', // Static data at build time
+    next: { revalidate: 3600 }, // Revalidate every hour (optional)
+  });
+  if (!res.ok) throw new Error('Failed to fetch resume data');
+  return res.json();
 }
 
 // Client-side component
@@ -262,25 +272,10 @@ function Home({ resumeData }: { resumeData: ResumeData }) {
   );
 }
 
-// Server-side function for Static Site Generation (SSG)
-export async function getStaticProps() {
-  try {
-    const res = await fetch('https://api.dagbok.pro/resume/', {
-      cache: 'force-cache', // Ensures data is static during build
-    });
-    if (!res.ok) throw new Error('Failed to fetch resume data');
-    const resumeData = await res.json();
-    return {
-      props: {
-        resumeData,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching resume data:', error);
-    return {
-      props: {
-        resumeData: null,
-      },
-    };
-  }
-}
+// Server Component to fetch data
+const ResumeDataFetcher = async () => {
+  const resumeData = await getResumeData();
+  return <Home resumeData={resumeData} />;
+};
+
+export default ResumeDataFetcher;
