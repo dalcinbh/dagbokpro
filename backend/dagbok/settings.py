@@ -125,10 +125,9 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # CORS & Security Headers ======================================================
 CORS_ALLOWED_ORIGINS = [
-    "https://auth.dagbok.pro",
-    "https://auth.dagbok.pro/app1",
-    "https://auth.dagbok.pro/app2"
+    'https://auth.dagbok.pro',
 ]
+
 CSRF_TRUSTED_ORIGINS = [
     "https://auth.dagbok.pro",
     "https://auth.dagbok.pro/app1",
