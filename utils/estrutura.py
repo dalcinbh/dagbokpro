@@ -1,77 +1,88 @@
 import os
-import subprocess
 
-# Define os diretórios e arquivos
 BASE_DIR = "/home/adriano/dev/agiliza/dagbok"
 LOGS_DIR = os.path.join(BASE_DIR, "logs")
 EXCLUDE_FILE = os.path.join(BASE_DIR, "utils", "exclude")
 OUTPUT_FILE = os.path.join(LOGS_DIR, "estrutura_com_conteudo.txt")
-TREE_OUTPUT_FILE = os.path.join(LOGS_DIR, "estrutura_arvore.txt")
 
-# Cria o diretório de logs se não existir
+# Cria logs se não existir
 os.makedirs(LOGS_DIR, exist_ok=True)
 
-# Lê os arquivos e diretórios a serem ignorados
+# Carrega EXCLUDES
 exclude_dirs = set()
 exclude_files = set()
-if os.path.exists(EXCLUDE_FILE):
-    with open(EXCLUDE_FILE, "r") as f:
+
+if os.path.isfile(EXCLUDE_FILE):
+    with open(EXCLUDE_FILE, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line.startswith("DIR="):
-                exclude_dirs.add(os.path.join(BASE_DIR, line[4:]))
+                # Ex.: DIR=.github  -> BASE_DIR/.github
+                relative_path = line[4:].lstrip("./")
+                exclude_dirs.add(os.path.join(BASE_DIR, relative_path))
             elif line.startswith("FILE="):
-                exclude_files.add(os.path.join(BASE_DIR, line[5:]))
+                # Ex.: FILE=frontend/package-lock.json -> BASE_DIR/frontend/package-lock.json
+                relative_path = line[5:].lstrip("./")
+                exclude_files.add(os.path.join(BASE_DIR, relative_path))
 
-# Adiciona utils e arquivos SVG à lista de ignorados
-exclude_dirs.add(os.path.join(BASE_DIR, "utils"))
+# Se quiser ignorar utils mesmo que não esteja no exclude:
+# exclude_dirs.add(os.path.join(BASE_DIR, "utils"))
 
-# Função para verificar se um arquivo é binário ou SVG
-def is_ignored_file(file_path):
+def is_ignored_file(file_path: str) -> bool:
+    """
+    Retorna True se o arquivo deve ser ignorado.
+    - Está listado em exclude_files
+    - Tem extensão .svg
+    - É binário (contém caractere nulo no início)
+    """
+    if file_path in exclude_files:
+        return True
     if file_path.endswith(".svg"):
         return True
     try:
-        with open(file_path, 'rb') as f:
-            chunk = f.read(1024)
-            return b'\x00' in chunk  # Se contiver caracteres nulos, provavelmente é binário
-    except Exception:
+        with open(file_path, "rb") as bfile:
+            chunk = bfile.read(1024)
+            if b"\x00" in chunk:  # Sinal de arquivo binário
+                return True
+    except:
+        # Se não conseguir ler, ignore também
         return True
+    return False
 
-# Gera a árvore de diretórios ignorando os excluídos
-def generate_tree(base_dir, tree_output_file):
-    with open(tree_output_file, "w") as f:
-        f.write("Árvore de Diretórios Incluídos:\n")
-        tree_cmd = ["tree", base_dir, "-a", "-I", "|".join(os.path.basename(d) for d in exclude_dirs)]
-        result = subprocess.run(tree_cmd, capture_output=True, text=True)
-        f.write(result.stdout + "\n\n")
+with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+    out.write("Arquivos relevantes (conteúdo):\n\n")
 
-# Gera a árvore e a salva separadamente
-generate_tree(BASE_DIR, TREE_OUTPUT_FILE)
-
-# Percorre os arquivos no diretório base
-with open(OUTPUT_FILE, "w") as out_file:
+    # Caminha no BASE_DIR
     for root, dirs, files in os.walk(BASE_DIR, topdown=True):
-        # Remove os diretórios ignorados
-        dirs[:] = [d for d in dirs if os.path.join(root, d) not in exclude_dirs]
-        
-        for file in files:
-            file_path = os.path.join(root, file)
-            if file_path in exclude_files or is_ignored_file(file_path):
-                print(f"Ignorando arquivo: {file_path}")
+        # Se o root for ou começar com algum diretorio do exclude, pula
+        if any(root == d or root.startswith(d + os.sep) for d in exclude_dirs):
+            continue
+
+        # Também filtramos dirs no nível atual
+        dirs[:] = [d for d in dirs
+                   if os.path.join(root, d) not in exclude_dirs]
+
+        for filename in files:
+            fullpath = os.path.join(root, filename)
+
+            # Se for ignorado, pula
+            if is_ignored_file(fullpath):
+                print(f"Ignorando arquivo: {fullpath}")
                 continue
-            
-            print(f"Processando: {file_path}")
-            out_file.write("==========================================\n")
-            out_file.write(f"Arquivo: {os.path.relpath(file_path, BASE_DIR)}\n")
-            out_file.write("==========================================\n")
-            
+
+            # Escreve o cabeçalho
+            rel = os.path.relpath(fullpath, BASE_DIR)
+            out.write("==========================================\n")
+            out.write(f"Arquivo: {rel}\n")
+            out.write("==========================================\n")
+
+            # Tenta escrever o conteúdo
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    out_file.write(f.read())
+                with open(fullpath, "r", encoding="utf-8") as fin:
+                    out.write(fin.read())
             except Exception as e:
-                out_file.write(f"[Erro ao ler o arquivo: {e}]\n")
-            
-            out_file.write("\n\n")
+                out.write(f"[Erro ao ler o arquivo: {e}]\n")
+
+            out.write("\n\n")
 
 print(f"Arquivo {OUTPUT_FILE} gerado com sucesso!")
-print(f"Árvore dos diretórios incluídos salva em {TREE_OUTPUT_FILE}")
