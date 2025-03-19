@@ -33,3 +33,4 @@
 /home/adriano/dev/agiliza/dagbok/frontend/tailwind.config.js
 /home/adriano/dev/agiliza/dagbok/frontend/tsconfig.json
 /home/adriano/dev/agiliza/dagbok/.gitignore
+/home/adriano/.config/ngrok/ngrok.yaml
