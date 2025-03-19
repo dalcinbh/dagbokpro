@@ -3,6 +3,7 @@ import os
 # Configurações
 BASE_DIR = "/home/adriano/dev/agiliza/dagbok"
 LOGS_DIR = os.path.join(BASE_DIR, "logs")
+HEADER_FILES = os.path.join(BASE_DIR, "utils", "header.txt")  # arquivo para incluir no início do arquivo de saída
 INCLUDE_FILES = os.path.join(BASE_DIR, "utils", "include_files.txt")  # Lista de arquivos a serem incluídos
 OUTPUT_FILE = os.path.join(LOGS_DIR, "conteudo_arquivos_relevantes.txt")  # Arquivo de saída
 
@@ -24,12 +25,31 @@ def load_include_list(file_path: str) -> list:
                     include_list.append(line)  # Adiciona o caminho completo à lista
     return include_list
 
+# Função para carregar o conteúdo do cabeçalho
+def load_header(file_path: str) -> str:
+    """
+    Carrega o conteúdo do arquivo de cabeçalho.
+    Retorna o conteúdo como string ou uma mensagem de erro se o arquivo não existir.
+    """
+    if os.path.isfile(file_path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                return f.read()
+        except Exception as e:
+            return f"[Erro ao ler o cabeçalho: {e}]"
+    return "[Arquivo de cabeçalho não encontrado]"
+
 # Carrega a lista de arquivos a serem incluídos
 include_files = load_include_list(INCLUDE_FILES)
 
+# Carrega o conteúdo do cabeçalho
+header_content = load_header(HEADER_FILES)
+
 # Gera o arquivo de saída
 with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
-    out.write("Conteúdo dos arquivos relevantes:\n\n")
+    # Escreve o cabeçalho no início do arquivo de saída
+    out.write(header_content)
+    out.write("\n\n")  # Adiciona duas linhas em branco após o cabeçalho
 
     # Processa cada arquivo na lista de inclusão
     for file_path in include_files:

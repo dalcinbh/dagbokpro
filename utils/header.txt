@@ -1,0 +1,145 @@
+Ngrok:
+
+API DJANGO BACKEND: https://auth.dagbok.pro/app2
+NEXT FRONTEND: https://auth.dagbok.pro/app1
+
+É, eu tenho esses dois endereços que são vistos fora da minha máquina, 
+
+para eu poder implementar login social. 
+
+E eu tentei fazer o login social aqui e não deu certo. 
+
+Foi muito frustrante. 
+
+E aí eu pensei, poxa, será que o Next já não tem uma solução que eu possa acoplar na minha solução 
+
+para fazer login social? 
+
+Até mesmo, e aí pensando que o Jungle é o back-end, 
+
+e até uma estruturação de tabela com as informações básicas do usuário, 
+
+não precisa entender. 
+
+Não precisa entender o endereço, não precisa ter nada por enquanto. 
+
+Na verdade, endereço, telefone, nome completo, pode ser nome e sobrenome. 
+
+A gente pode usar o SQLite como no início, muito simples mesmo, nada de sofisticado. 
+
+É, eu quero entrar na aplicação, se eu não tiver logado, 
+
+eu sou redirecionado para a tela de login. 
+
+Aí eu queria saber, ao invés de eu tentar fazer na mão, 
+
+igual você vai ver no código aí, né, você está vendo no código, 
+
+se eu não pego coisa pronta já, porque eu não quero perder tempo com isso. 
+
+O objetivo do projeto não é esse, fazer login social. 
+
+Eu já quero pegar o login social pronto. 
+
+Eu acho que o próprio Ngrok, na versão paga, 
+
+eu acho que ele já tem já alguma... 
+
+alguma coisa de login social. 
+
+Eu queria pegar alguma coisa pronta e adaptar o layout para o layout do meu projeto. 
+
+E eu estou colocando esse cabeçalho principalmente para isso. 
+
+E à medida que o tempo for passando, eu vou alterando o cabeçalho 
+
+de acordo com a necessidade que eu tenho no momento. 
+
+eu estou precisando disso. 
+
+Eu estou desanimando, porque quanto mais tempo eu fico gastando, 
+
+com coisa que não é o objetivo do projeto, 
+
+mais distante eu vou ficando do objetivo que eu quero do projeto. 
+
+E eu estou com muita dificuldade de enxergar 
+
+a integração do login social. 
+
+Aí eu posso pensar em logar como Google, 
+
+qualquer tipo de login social eu aceito. 
+
+E aí eu poderia ter uma gama de opções, 
+
+porque eu não quero o login, 
+
+eu não quero o login, 
+
+eu não quero o cadastro manual. 
+
+Eu só vou aceitar login social. 
+
+-----------------------------------ARVORE DO PROJETO USANDO tree -L 2 /home/adriano/dev/agiliza/dagbok-----------------------------
+/home/adriano/dev/agiliza/dagbok
+.
+├── backend
+│   ├── api
+│   ├── backend-dev-template-1741861165.json
+│   ├── dagbok
+│   ├── db.sqlite3
+│   ├── files
+│   ├── manage.py
+│   ├── requirements.txt
+│   ├── venv
+│   └── zappa_logs
+├── frontend
+│   ├── eslint.config.mjs
+│   ├── html2pdf.d.ts
+│   ├── next.config.ts
+│   ├── next-env.d.ts
+│   ├── node_modules
+│   ├── out
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   ├── server.js
+│   ├── src
+│   ├── tailwind.config.js
+│   └── tsconfig.json
+├── logs
+│   └── conteudo_arquivos_relevantes.txt
+├── node_modules
+│   ├── asynckit
+│   ├── axios
+│   ├── call-bind-apply-helpers
+│   ├── combined-stream
+│   ├── delayed-stream
+│   ├── dunder-proto
+│   ├── es-define-property
+│   ├── es-errors
+│   ├── es-object-atoms
+│   ├── es-set-tostringtag
+│   ├── follow-redirects
+│   ├── form-data
+│   ├── function-bind
+│   ├── get-intrinsic
+│   ├── get-proto
+│   ├── gopd
+│   ├── hasown
+│   ├── has-symbols
+│   ├── has-tostringtag
+│   ├── math-intrinsics
+│   ├── mime-db
+│   ├── mime-types
+│   └── proxy-from-env
+├── README.md
+└── utils
+    ├── estrutura.py
+    ├── header.txt
+    └── include_files.txt
+
+
+----------------------------------CÓDIGO DO DABGOK APENAS COM OS AQUIVOS MAIS RELEVANTES-------------------------------------------

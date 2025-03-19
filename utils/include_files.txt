@@ -1,3 +1,4 @@
+/home/adriano/.config/ngrok/ngrok.yml
 /home/adriano/dev/agiliza/dagbok/backend/api/admin.py
 /home/adriano/dev/agiliza/dagbok/backend/api/apps.py
 /home/adriano/dev/agiliza/dagbok/backend/api/models.py
@@ -28,9 +29,8 @@
 /home/adriano/dev/agiliza/dagbok/frontend/next.config.ts
 /home/adriano/dev/agiliza/dagbok/frontend/package.json
 /home/adriano/dev/agiliza/dagbok/frontend/postcss.config.mjs
-/home/adriano/dev/agiliza/dagbok/frontend/README.md
+/home/adriano/dev/agiliza/dagbok/README.md
 /home/adriano/dev/agiliza/dagbok/frontend/server.js
 /home/adriano/dev/agiliza/dagbok/frontend/tailwind.config.js
 /home/adriano/dev/agiliza/dagbok/frontend/tsconfig.json
 /home/adriano/dev/agiliza/dagbok/.gitignore
-/home/adriano/.config/ngrok/ngrok.yaml
