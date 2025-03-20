@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'corsheaders',
     'allauth',
@@ -37,6 +38,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'dagbok.urls'
@@ -98,6 +100,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
+
+# Configurações do django-allauth
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Desativa verificação de e-mail
+ACCOUNT_LOGIN_METHODS = ['email']  # Define o método de login como e-mail
+ACCOUNT_SIGNUP_ENABLED = False  # Desativa signup manual completamente
+ACCOUNT_ADAPTER = 'allauth.account.adapter.DefaultAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
