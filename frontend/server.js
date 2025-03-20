@@ -1,28 +1,41 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const path = require('path');
+const next = require('next');
 
-const app = express();
+const dev = process.env.NODE_ENV !== 'production';
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler();
 
-// Serve static files from the 'out' directory
-app.use(express.static(path.join(__dirname, 'out')));
+nextApp.prepare().then(() => {
+  const server = express();
 
-// Proxy for the Django backend
-app.use('/app2', createProxyMiddleware({
-  target: 'http://localhost:8000', // Point to the Django backend
-  changeOrigin: true,
-  pathRewrite: {
-    '^/app2': '', // Remove the `/app2` prefix when forwarding to the backend
-  },
-}));
+  server.use(
+    '/app2',
+    createProxyMiddleware({
+      target: 'http://192.168.1.2:8000',
+      changeOrigin: true,
+      pathRewrite: { '^/app2': '' },
+      onProxyReq: (proxyReq, req, res) => {
+        console.log('Proxying to backend:', req.url);
+      },
+    })
+  );
 
-// Handle any other routes by serving index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'out', 'index.html'));
-});
+  server.all('/app1*', (req, res) => {
+    console.log('Handling frontend request:', req.url);
+    console.log('Original URL:', req.originalUrl);
+    console.log('Host:', req.headers.host);
+    req.url = req.url.replace(/^\/app1/, '');
+    return handle(req, res);
+  });
 
-// Start the server
-app.listen(80, () => {
-  console.log('Proxy server running on port 80');
-  console.log('Serving static files from:', path.join(__dirname, 'out'));
+  server.all('*', (req, res) => {
+    console.log('Catch-all request:', req.url);
+    return handle(req, res);
+  });
+
+  server.listen(3000, '0.0.0.0', (err) => {
+    if (err) throw err;
+    console.log('> Server rodando em http://192.168.1.2:3000');
+  });
 });

@@ -9,13 +9,15 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleGoogleLogin = async () => {
-    const result = await signIn("google", { redirect: false });
+    const result = await signIn("google");
+    console.log(result); // Veja qual URL aparece em 'url'
     if (result?.error) {
       console.error("Login error:", result.error);
     } else {
       router.push("/");
     }
   };
+  
 
   return (
     <>

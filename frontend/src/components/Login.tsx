@@ -8,7 +8,7 @@ export default function Login() {
     const router = useRouter();
 
     const handleGoogleLogin = async () => {
-        const result = await signIn("google", { redirect: false });
+        const result = await signIn("google");
         if (result?.error) {
             console.error("Login error:", result.error);
         } else {

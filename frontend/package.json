@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "export": "next build"
+    "start": "node server.js",
+    "lint": "next lint"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
@@ -23,7 +22,8 @@
     "next": "15.2.1",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "axios": "^1.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,13 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://auth.dagbok.pro' : '', // Match ngrok/production URL
+  // Remova ou comente basePath
+  // basePath: '/app1',
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true
   },
   eslint: {
-    ignoreDuringBuilds: true, // Optional: disables ESLint during build if needed
+    ignoreDuringBuilds: true
   },
 };
 

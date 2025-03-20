@@ -104,11 +104,12 @@ LOGOUT_REDIRECT_URL = '/login'
 SITE_ID = 1
 
 CORS_ALLOWED_ORIGINS = [
-    'https://auth.dagbok.pro',
+    'https://auth.dagbok.pro'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://auth.dagbok.pro',
+    'https://auth.dagbok.pro/app1',
 ]
 
 REST_FRAMEWORK = {

@@ -1,7 +1,7 @@
 "use client";
-
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Head from "../components/Head";
 import AboutMe from "../components/AboutMe";
 import Education from "../components/Education";
@@ -10,46 +10,39 @@ import Skills from "../components/Skills";
 import axios from "axios";
 import { ResumeData } from "../types";
 
-// Force dynamic rendering for this page
+// Força renderização dinâmica para evitar problemas de pré-renderização
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
 
-  const fetchResumeData = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/resume/`, {
-        headers: { Authorization: `Bearer ${session?.accessToken || ""}` },
-      });
-      setResumeData(response.data);
-    } catch (error) {
-      console.error("Error fetching resume:", error);
-      setResumeData(null); // Reset data on error
+  useEffect(() => {
+    // Se não houver sessão ou se não houver accessToken, redireciona para /login
+    if (status !== "loading" && (!session || !session.accessToken)) {
+      router.push("/login");
     }
-  };
+  }, [session, status, router]);
 
   useEffect(() => {
     if (session?.accessToken) {
-      fetchResumeData();
+      const fetchResume = async () => {
+        try {
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/resume/`, {
+            headers: { Authorization: `Bearer ${session.accessToken}` },
+          });
+          setResumeData(response.data);
+        } catch (error) {
+          console.error("Error fetching resume:", error);
+        }
+      };
+      fetchResume();
     }
   }, [session]);
 
-  if (status === "loading") {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!resumeData) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        No resume data available. Please try again later.
-      </div>
-    );
-  }
+  if (status === "loading") return <div>Loading...</div>;
+  if (!resumeData) return <div>Carregando dados do currículo...</div>;
 
   return (
     <>

@@ -1,87 +1,85 @@
 Ngrok:
 
-API DJANGO BACKEND: https://auth.dagbok.pro/app2
+DJANGO BACKEND API: https://auth.dagbok.pro/app2
 NEXT FRONTEND: https://auth.dagbok.pro/app1
 
-É, eu tenho esses dois endereços que são vistos fora da minha máquina, 
+Yeah, I have these two addresses that are accessible outside my machine,
 
-para eu poder implementar login social. 
+so I can implement social login.
 
-E eu tentei fazer o login social aqui e não deu certo. 
+I tried to set up social login here, but it didn’t work.
 
-Foi muito frustrante. 
+It was very frustrating.
 
-E aí eu pensei, poxa, será que o Next já não tem uma solução que eu possa acoplar na minha solução 
+And then I thought, geez, could Next already have a solution that I can integrate into my project
 
-para fazer login social? 
+to handle social login?
 
-Até mesmo, e aí pensando que o Jungle é o back-end, 
+Also, thinking that Jungle is the back-end,
 
-e até uma estruturação de tabela com as informações básicas do usuário, 
+and even a basic table structure with the user’s essential information,
 
-não precisa entender. 
+it doesn’t need to be complicated.
 
-Não precisa entender o endereço, não precisa ter nada por enquanto. 
+It doesn’t need to understand the address, it doesn’t need to have anything for now.
 
-Na verdade, endereço, telefone, nome completo, pode ser nome e sobrenome. 
+Actually, address, phone number, full name—first and last name will suffice.
 
-A gente pode usar o SQLite como no início, muito simples mesmo, nada de sofisticado. 
+We can use SQLite, just like in the beginning, very simple, nothing fancy.
 
-É, eu quero entrar na aplicação, se eu não tiver logado, 
+Yeah, I want to enter the application, and if I’m not logged in,
 
-eu sou redirecionado para a tela de login. 
+I’m redirected to the login screen.
 
-Aí eu queria saber, ao invés de eu tentar fazer na mão, 
+Then I wondered, instead of trying to do it manually,
 
-igual você vai ver no código aí, né, você está vendo no código, 
+like you’ll see in the code there, right, you’re looking at the code,
 
-se eu não pego coisa pronta já, porque eu não quero perder tempo com isso. 
+if I don’t grab something ready-made, because I don’t want to waste time on this.
 
-O objetivo do projeto não é esse, fazer login social. 
+The project’s goal isn’t to build social login from scratch.
 
-Eu já quero pegar o login social pronto. 
+I want to use a pre-built social login solution.
 
-Eu acho que o próprio Ngrok, na versão paga, 
+I think Ngrok, in its paid version,
 
-eu acho que ele já tem já alguma... 
+might already have some...
 
-alguma coisa de login social. 
+some kind of social login feature.
 
-Eu queria pegar alguma coisa pronta e adaptar o layout para o layout do meu projeto. 
+I want to grab something ready-made and adapt the layout to fit my project’s design.
 
-E eu estou colocando esse cabeçalho principalmente para isso. 
+And I’m adding this header mainly for that purpose.
 
-E à medida que o tempo for passando, eu vou alterando o cabeçalho 
+As time goes by, I’ll adjust the header
 
-de acordo com a necessidade que eu tenho no momento. 
+according to the needs I have at the moment.
 
-eu estou precisando disso. 
+I need this.
 
-Eu estou desanimando, porque quanto mais tempo eu fico gastando, 
+I’m getting discouraged because the more time I spend
 
-com coisa que não é o objetivo do projeto, 
+on things that aren’t the project’s main goal,
 
-mais distante eu vou ficando do objetivo que eu quero do projeto. 
+the further I get from the objective I want to achieve with the project.
 
-E eu estou com muita dificuldade de enxergar 
+And I’m having a lot of trouble figuring out
 
-a integração do login social. 
+how to integrate social login.
 
-Aí eu posso pensar em logar como Google, 
+Then I can think about logging in with Google,
 
-qualquer tipo de login social eu aceito. 
+any type of social login would work for me.
 
-E aí eu poderia ter uma gama de opções, 
+And that way, I could have a range of options,
 
-porque eu não quero o login, 
+because I don’t want manual login,
 
-eu não quero o login, 
+I don’t want manual registration.
 
-eu não quero o cadastro manual. 
+I’ll only accept social login.
 
-Eu só vou aceitar login social. 
-
------------------------------------ARVORE DO PROJETO USANDO tree -L 2 /home/adriano/dev/agiliza/dagbok-----------------------------
+-----------------------------------PROJECT TREE USING tree -L 2 /home/adriano/dev/agiliza/dagbokNgrok:-----------------------------
 /home/adriano/dev/agiliza/dagbok
 .
 ├── backend
