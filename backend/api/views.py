@@ -6,14 +6,18 @@ import requests
 import traceback
 from datetime import datetime
 from botocore.exceptions import ClientError
-from dotenv import load_dotenv
-from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from allauth.socialaccount.models import SocialAccount
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from dotenv import load_dotenv
+from .models import UserProfile
 
 # Load environment variables from .env file
 load_dotenv()
@@ -25,6 +29,21 @@ class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
     callback_url = 'https://auth.dagbok.pro/app1/api/auth/callback/google'
+
+# Signal to create or update UserProfile after social login
+@receiver(post_save, sender=SocialAccount)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        user = instance.user
+        # Extrair nome e sobrenome do SocialAccount
+        extra_data = instance.extra_data
+        first_name = extra_data.get('given_name', '')
+        last_name = extra_data.get('family_name', '')
+        # Criar ou atualizar o perfil do usuário
+        UserProfile.objects.update_or_create(
+            user=user,
+            defaults={'first_name': first_name, 'last_name': last_name}
+        )
 
 class ResumeAPIView(APIView):
     def get(self, request):
