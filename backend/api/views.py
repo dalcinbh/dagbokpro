@@ -11,18 +11,20 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from allauth.socialaccount.models import SocialToken, SocialAccount
-from django.contrib.auth import login
-from rest_framework_simplejwt.tokens import RefreshToken
+from dj_rest_auth.registration.views import SocialLoginView
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Configure the S3 client with the specified region
 s3_client = boto3.client('s3', region_name=os.getenv('AWS_S3_REGION_NAME'))
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client
+    callback_url = 'https://auth.dagbok.pro/app1/api/auth/callback/google'
 
 class ResumeAPIView(APIView):
     def get(self, request):
@@ -108,29 +110,76 @@ class ResumeAPIView(APIView):
             print(f"Error in ResumeAPIView: {e}\nTraceback:\n{error_trace}")
             return Response({"error": f"Internal server error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # ... (métodos process_with_deepseek e process_with_chatgpt permanecem os mesmos)
+    def process_with_deepseek(self, text, api_key):
+        url = "https://api.deepseek.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        prompt = (
+            "Extract and structure the following resume text into a JSON format with the following sections: "
+            "title (name of the person), summary (professional summary), education (list of degrees with institution, degree, and year), "
+            "experience (list of jobs with company, role, duration, and description), skills (list of skills), "
+            "and additional_information (any other relevant details like certifications, languages, etc.). "
+            "Ensure the output is clean and well-structured JSON. Here is the resume text:\n\n" + text
+        )
+        data = {
+            "model": "deepseek-chat",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant that extracts and structures resume data into JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": 4096,
+            "temperature": 0.7
+        }
 
-@csrf_exempt
-def google_login(request):
-    if request.method == 'POST':
-        token = request.POST.get('access_token')
-        if not token:
-            return JsonResponse({'error': 'No access token provided'}, status=400)
-
-        # Validação do token com Google (usando OAuth2Client do allauth)
-        client = OAuth2Client('google', request)
         try:
-            social_account = SocialAccount.objects.from_token(token, 'google')
-            user = social_account.user
-            login(request, user)  # Faz login do usuário
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()
+            result = response.json()
+            content = result['choices'][0]['message']['content'].strip()
 
-            # Gera token JWT
-            refresh = RefreshToken.for_user(user)
-            return JsonResponse({
-                'message': 'Login successful',
-                'user': user.email,
-                'token': str(refresh.access_token)
-            })
+            # Clean the response if it contains markdown or extra text
+            if content.startswith("```json"):
+                content = content[7:-3].strip()  # Remove ```json and ``` markers
+            return json.loads(content)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    return JsonResponse({'error': 'Invalid method'}, status=405)
+            print(f"Error processing with DeepSeek: {e}")
+            return None
+
+    def process_with_chatgpt(self, text, api_key):
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        prompt = (
+            "Extract and structure the following resume text into a JSON format with the following sections: "
+            "title (name of the person), summary (professional summary), education (list of degrees with institution, degree, and year), "
+            "experience (list of jobs with company, role, duration, and description), skills (list of skills), "
+            "and additional_information (any other relevant details like certifications, languages, etc.). "
+            "Ensure the output is clean and well-structured JSON. Here is the resume text:\n\n" + text
+        )
+        data = {
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant that extracts and structures resume data into JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            "max_tokens": 4096,
+            "temperature": 0.7
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()
+            result = response.json()
+            content = result['choices'][0]['message']['content'].strip()
+
+            # Clean the response if it contains markdown or extra text
+            if content.startswith("```json"):
+                content = content[7:-3].strip()  # Remove ```json and ``` markers
+            return json.loads(content)
+        except Exception as e:
+            print(f"Error processing with ChatGPT: {e}")
+            return None

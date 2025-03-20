@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import axios from "axios";
 
 export default NextAuth({
   providers: [
@@ -10,11 +11,18 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, account }) {
-      if (account) token.accessToken = account.access_token;
+      if (account) {
+        const response = await axios.post(
+          `${process.env.BACKEND_API_URL}/api/auth/google/`,
+          { access_token: account.access_token },
+          { headers: { "Content-Type": "application/json" } }
+        );
+        token.accessToken = response.data.token;
+      }
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
+      session.accessToken = token.accessToken as string;
       return session;
     },
   },

@@ -1,4 +1,5 @@
 /home/adriano/.config/ngrok/ngrok.yml
+/home/adriano/dev/agiliza/dagbok/frontend/tsconfig.json
 /home/adriano/dev/agiliza/dagbok/backend/api/admin.py
 /home/adriano/dev/agiliza/dagbok/backend/api/apps.py
 /home/adriano/dev/agiliza/dagbok/backend/api/models.py
@@ -34,3 +35,9 @@
 /home/adriano/dev/agiliza/dagbok/frontend/tailwind.config.js
 /home/adriano/dev/agiliza/dagbok/frontend/tsconfig.json
 /home/adriano/dev/agiliza/dagbok/.gitignore
+/home/adriano/dev/agiliza/dagbok/frontend/src/types/index.ts
+/home/adriano/dev/agiliza/dagbok/frontend/src/types/resume.ts
+/home/adriano/dev/agiliza/dagbok/frontend/src/middlewares/auth.ts
+/home/adriano/dev/agiliza/dagbok/frontend/src/pages/api/auth/[...nextauth].ts
+/home/adriano/dev/agiliza/dagbok/backend/api/urls.py
+/home/adriano/dev/agiliza/dagbok/frontend/next-auth.d.ts
