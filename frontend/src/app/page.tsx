@@ -8,14 +8,14 @@ import Education from "../components/Education";
 import Experience from "../components/Experience";
 import Skills from "../components/Skills";
 import axios from "axios";
-import { ResumeData} from "../types";
+import { ResumeData } from "../types";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
 
   useEffect(() => {
-    if (session && session.accessToken) {
+    if (session?.accessToken) {
       const fetchResume = async () => {
         try {
           const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/resume/`, {

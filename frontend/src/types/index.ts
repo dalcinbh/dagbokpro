@@ -1,23 +1,33 @@
 export interface EducationEntry {
-    institution: string;
-    degree: string;
-    year: string;
-  }
-  
-  export interface ExperienceEntry {
-    company: string;
-    role: string;
-    duration: string;
-    description: string;
-  }
-  
-  export interface ResumeData {
-    title: string;
-    summary: {
-      professional_summary: string;
-    };
-    education: EducationEntry[];
-    experience: ExperienceEntry[];
-    skills: string[];
-    additional_information: Record<string, any>;
-  }
+  institution: string;
+  degree: string;
+  year: string;
+}
+
+export interface ExperienceEntry {
+  company: string;
+  role: string;
+  duration: string;
+  description: string;
+  highlights?: string[];
+}
+
+export interface Summary {
+  professional_summary: string;
+}
+
+export interface AdditionalInformation {
+  languages?: string | string[];
+  citizenship?: string;
+  availability?: string;
+  interests?: string;
+}
+
+export interface ResumeData {
+  title: string;
+  summary: Summary;
+  education: EducationEntry[];
+  experience: ExperienceEntry[];
+  skills: string[];
+  additional_information: AdditionalInformation;
+}

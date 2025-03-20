@@ -36,7 +36,6 @@
 /home/adriano/dev/agiliza/dagbok/frontend/tsconfig.json
 /home/adriano/dev/agiliza/dagbok/.gitignore
 /home/adriano/dev/agiliza/dagbok/frontend/src/types/index.ts
-/home/adriano/dev/agiliza/dagbok/frontend/src/types/resume.ts
 /home/adriano/dev/agiliza/dagbok/frontend/src/middlewares/auth.ts
 /home/adriano/dev/agiliza/dagbok/frontend/src/pages/api/auth/[...nextauth].ts
 /home/adriano/dev/agiliza/dagbok/backend/api/urls.py
