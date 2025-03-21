@@ -1,8 +1,12 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
-console.log("NEXTAUTH_URL at module level:", process.env.NEXTAUTH_URL);
+type AccountType = {
+  provider: string;
+  type: string;
+  access_token?: string;
+};
 
 export default NextAuth({
   providers: [
@@ -14,20 +18,10 @@ export default NextAuth({
           redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/google`,
         },
       },
-      // Adicionar log para depurar o redirect_uri
-      profile(profile) {
-        console.log("Google Provider - redirect_uri:", `${process.env.NEXTAUTH_URL}/api/auth/callback/google`);
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-        };
-      },
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account }: { token: any; account: AccountType | null }) {
       console.log("NEXTAUTH_URL in jwt callback:", process.env.NEXTAUTH_URL);
       console.log("Redirect URI in jwt callback:", `${process.env.NEXTAUTH_URL}/api/auth/callback/google`);
       if (account) {
@@ -39,27 +33,26 @@ export default NextAuth({
           );
           token.accessToken = response.data.token;
         } catch (error) {
-          const axiosError = error as AxiosError;
-          console.error("Error exchanging token with backend:", axiosError.response?.data || axiosError.message);
+          console.error("Error exchanging token with backend:", error);
           throw new Error("Failed to authenticate with backend");
         }
       }
       return token;
     },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken as string | undefined;
+    async session({ session, token }: { session: any; token: any }) {
+      session.accessToken = token.accessToken;
       return session;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       console.log("Redirect callback - baseUrl:", baseUrl);
+      // Garante que o baseUrl inclua o basePath /app1
       const correctedBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
-      console.log("Corrected baseUrl:", correctedBaseUrl);
-      return `${correctedBaseUrl}/`;
+      return url.startsWith("/") ? `${correctedBaseUrl}${url}` : url;
     },
   },
   pages: {
-    error: '/error',
-    signIn: '/login',
+    signIn: "/login",
+    error: "/error",
   },
-  debug: true,
+  debug: true, // Ativa logs detalhados para depuração
 });

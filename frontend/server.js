@@ -9,33 +9,23 @@ const handle = nextApp.getRequestHandler();
 nextApp.prepare().then(() => {
   const server = express();
 
+  // Proxy para o Django: /django/* -> porta 8000
   server.use(
-    '/app2',
+    '/django',
     createProxyMiddleware({
-      target: 'http://192.168.1.2:8000',
+      target: 'http://localhost:8000', // ou o IP correto do seu backend
       changeOrigin: true,
-      pathRewrite: { '^/app2': '' },
-      onProxyReq: (proxyReq, req, res) => {
-        console.log('Proxying to backend:', req.url);
-      },
+      pathRewrite: { '^/django': '' },
     })
   );
 
-  server.all('/app1*', (req, res) => {
-    console.log('Handling frontend request:', req.url);
-    console.log('Original URL:', req.originalUrl);
-    console.log('Host:', req.headers.host);
-    req.url = req.url.replace(/^\/app1/, '');
-    return handle(req, res);
-  });
-
+  // Todas as outras rotas -> Next.js
   server.all('*', (req, res) => {
-    console.log('Catch-all request:', req.url);
     return handle(req, res);
   });
 
   server.listen(3000, '0.0.0.0', (err) => {
     if (err) throw err;
-    console.log('> Server rodando em http://192.168.1.2:3000');
+    console.log('> Server rodando em http://localhost:3000');
   });
 });
