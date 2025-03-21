@@ -1,3 +1,4 @@
+// frontend/server.js
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const next = require('next');
@@ -9,13 +10,13 @@ const handle = nextApp.getRequestHandler();
 nextApp.prepare().then(() => {
   const server = express();
 
-  // Proxy para o Django: /django/* -> porta 8000
+  // Proxy para o Django: /django/* -> http://localhost:8000
   server.use(
     '/django',
     createProxyMiddleware({
-      target: 'http://localhost:8000', // ou o IP correto do seu backend
+      target: 'http://localhost:8000', // Backend Django local
       changeOrigin: true,
-      pathRewrite: { '^/django': '' },
+      pathRewrite: { '^/django': '' }, // Remove o prefixo /django
     })
   );
 

@@ -1,6 +1,6 @@
 Ngrok:
 
-DJANGO BACKEND API: https://auth.dagbok.pro/api ------> port 8000
+DJANGO BACKEND API: https://auth.dagbok.pro/django ------> port 8000
 NEXT FRONTEND: https://auth.dagbok.pro ------> port 3000
 
 

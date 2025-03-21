@@ -18,6 +18,7 @@ from django.contrib.auth import login
 
 class GoogleCallback(APIView):
     def post(self, request):
+        SECRET_KEY = os.getenv('SECRET_KEY')
         access_token = request.data.get('access_token')
         strategy = load_strategy(request)
         backend = load_backend(strategy, 'google-oauth2', redirect_uri=None)
@@ -25,7 +26,7 @@ class GoogleCallback(APIView):
         try:
             user = backend.do_auth(access_token)
             login(request, user)
-            return Response({"token": "your-jwt-token-here"})  # Replace with actual JWT token
+            return Response({"token": SECRET_KEY })  # Replace with actual JWT token
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

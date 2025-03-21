@@ -1,3 +1,4 @@
+// frontend/src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
@@ -22,12 +23,10 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, account }: { token: any; account: AccountType | null }) {
-      console.log("NEXTAUTH_URL in jwt callback:", process.env.NEXTAUTH_URL);
-      console.log("Redirect URI in jwt callback:", `${process.env.NEXTAUTH_URL}/api/auth/callback/google`);
       if (account) {
         try {
           const response = await axios.post(
-            `${process.env.BACKEND_API_URL}/api/auth/google/`,
+            `${process.env.BACKEND_API_URL}/auth/google/`,
             { access_token: account.access_token },
             { headers: { "Content-Type": "application/json" } }
           );
@@ -44,8 +43,6 @@ export default NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      console.log("Redirect callback - baseUrl:", baseUrl);
-      // Garante que o baseUrl inclua o basePath /app1
       const correctedBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
       return url.startsWith("/") ? `${correctedBaseUrl}${url}` : url;
     },
@@ -54,5 +51,5 @@ export default NextAuth({
     signIn: "/login",
     error: "/error",
   },
-  debug: true, // Ativa logs detalhados para depuração
+  debug: true, // Ativa logs para depuração
 });

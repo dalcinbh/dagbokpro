@@ -3,6 +3,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('app2/api/', include('api.urls')),
-    path('auth/', include('social_django.urls', namespace='social')),  # URLs para autenticação social
+    path('api/', include('api.urls')),  # Rotas da API sob /api/
+    path('auth/', include('social_django.urls', namespace='social')),  # Autenticação social
 ]
