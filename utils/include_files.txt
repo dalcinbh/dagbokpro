@@ -25,6 +25,7 @@
 /home/adriano/dev/agiliza/dagbok/frontend/src/components/Login.tsx
 /home/adriano/dev/agiliza/dagbok/frontend/src/components/Skills.tsx
 /home/adriano/dev/agiliza/dagbok/frontend/.env.local
+/home/adriano/dev/agiliza/dagbok/backend/.env
 /home/adriano/dev/agiliza/dagbok/frontend/.gitignore
 /home/adriano/dev/agiliza/dagbok/frontend/eslint.config.mjs
 /home/adriano/dev/agiliza/dagbok/frontend/html2pdf.d.ts

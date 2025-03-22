@@ -10,14 +10,21 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     const result = await signIn("google");
-    console.log(result); // Veja qual URL aparece em 'url'
     if (result?.error) {
       console.error("Login error:", result.error);
     } else {
       router.push("/");
     }
   };
-  
+
+  const handleGithubLogin = async () => {
+    const result = await signIn("github");
+    if (result?.error) {
+      console.error("Login error:", result.error);
+    } else {
+      router.push("/");
+    }
+  };
 
   return (
     <>
@@ -38,6 +45,13 @@ export default function LoginPage() {
         >
           <Image src="/google-icon.png" alt="Google" width={20} height={20} />
           <span className="font-poppins text-base text-[#1E2A44]">Log in with Google</span>
+        </button>
+        <button
+          onClick={handleGithubLogin}
+          className="flex items-center gap-3 px-5 py-2 border border-[#E0E0E0] rounded-lg bg-white hover:shadow-md transition-shadow"
+        >
+          <Image src="/github-icon.png" alt="GitHub" width={20} height={20} />
+          <span className="font-poppins text-base text-[#1E2A44]">Log in with GitHub</span>
         </button>
       </div>
     </>

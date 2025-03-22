@@ -15,6 +15,29 @@ from .models import UserProfile
 from rest_framework.permissions import IsAuthenticated
 from social_django.utils import load_backend, load_strategy
 from django.contrib.auth import login
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class SocialTokenLoginView(APIView):
+    def post(self, request, provider):
+        access_token = request.data.get('access_token')
+        if not access_token:
+            return Response({"error": "Access token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        strategy = load_strategy(request)
+        try:
+            backend = load_backend(strategy, provider, redirect_uri=None)
+            user = backend.do_auth(access_token)
+            if user:
+                login(request, user)
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                })
+            else:
+                return Response({"error": "Authentication failed"}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class GoogleCallback(APIView):
     def post(self, request):
