@@ -1,4 +1,3 @@
-
 /**
  * RootLayout component that defines the structure of the HTML document.
  *
@@ -8,6 +7,7 @@
  */
 import type { Metadata } from 'next';
 import './globals.css';
+import { Providers } from './client-providers';
 
 /**
  * Metadata for the application layout.
@@ -16,8 +16,8 @@ import './globals.css';
  * @property {string} description - A brief description of the application.
  */
 export const metadata: Metadata = {
-  title: 'My Resume',
-  description: 'Adriano Alves Resume',
+  title: 'Dagbok | Gerenciador de Currículos',
+  description: 'Sistema de gerenciamento de currículos e resumos profissionais',
 };
 
 export default function RootLayout({
@@ -26,8 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="pt-BR">
+      <body>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

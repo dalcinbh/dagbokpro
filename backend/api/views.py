@@ -1,4 +1,3 @@
-
 import os
 """
 ResumeAPIView is a Django Rest Framework API view that processes a resume text file stored in an S3 bucket,
@@ -46,79 +45,55 @@ s3_client = boto3.client('s3', region_name=os.getenv('AWS_S3_REGION_NAME'))
 
 class ResumeAPIView(APIView):
     def get(self, request):
+        """
+        IMPLEMENTAÇÃO TEMPORÁRIA PARA TESTE - Retorna dados JSON fixos sem acessar S3
+        """
         try:
-            # Retrieve bucket name and folder paths from environment variables
-            bucket_name = os.getenv('AWS_STORAGE_BUCKET_NAME')
-            text_folder = 'text/'
-            json_folder = 'json/'
-
-            # Define the input TXT file path and output JSON file path
-            txt_input_file_key = text_folder + os.getenv('INPUT_TEXT_FILE_PATH')
-            json_output_file_key = json_folder + os.getenv('OUTPUT_JSON_FILE_PATH')
-
-            # Check if the input TXT file exists in the S3 bucket
-            try:
-                s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)
-            except ClientError as e:
-                if e.response['Error']['Code'] == '404':
-                    return Response({"error": f"Input text file '{txt_input_file_key}' not found in S3 bucket"}, status=status.HTTP_404_NOT_FOUND)
-                else:
-                    print(f"Unexpected error checking input text file in S3: {e}")
-                    return Response({"error": f"Failed to check input text file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            # Check if the output JSON file exists and is up-to-date
-            try:
-                json_obj = s3_client.head_object(Bucket=bucket_name, Key=json_output_file_key)
-                json_mtime = json_obj['LastModified'].timestamp()
-            except ClientError as e:
-                if e.response['Error']['Code'] == '404':
-                    print(f"JSON file '{json_output_file_key}' not found. Creating a new one...")
-                    json_mtime = 0  # Force JSON generation
-                else:
-                    print(f"Unexpected error checking JSON file in S3: {e}")
-                    return Response({"error": f"Failed to check JSON file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            # Get the last modified date of the input TXT file
-            txt_mtime = s3_client.head_object(Bucket=bucket_name, Key=txt_input_file_key)['LastModified'].timestamp()
-
-            # If the JSON file does not exist or the TXT file is more recent, update the JSON
-            if not json_mtime or txt_mtime > json_mtime:
-                # Read the content of the input TXT file
-                response = s3_client.get_object(Bucket=bucket_name, Key=txt_input_file_key)
-                combined_text = response['Body'].read().decode('utf-8')
-
-                # Call the DeepSeek API to process the text
-                api_key = os.getenv('API_KEY_DAGBOK')  # Use the AI key
-                if not api_key:
-                    return Response({"error": "API key not found in .env"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-                processed_data = self.process_with_chatgpt(combined_text, api_key)
-                if not processed_data:
-                    processed_data = {
-                        "title": "Adriano Alves",
-                        "summary": {"professional_summary": "Failed to process resume with DeepSeek"},
-                        "education": {},
-                        "experience": [],
-                        "skills": [],
-                        "additional_information": {}
+            # Retornar dados de teste para simular um currículo
+            sample_resume = {
+                "title": "Adriano Alves - Desenvolvedor Full Stack",
+                "summary": {
+                    "professional_summary": "Desenvolvedor Full Stack experiente com mais de 10 anos de experiência em desenvolvimento web. Especializado em Python, Django, JavaScript e React.js."
+                },
+                "education": {
+                    "Universidade Federal do Paraná": "Bacharel em Ciência da Computação (2010-2014)"
+                },
+                "experience": [
+                    {
+                        "company": "Agilizatop",
+                        "role": "Desenvolvedor Full Stack Sênior",
+                        "timeline": "2018 - Presente",
+                        "description": "Desenvolvimento de aplicações web utilizando Django e React.js",
+                        "highlights": [
+                            "Implementação de sistema de autenticação OAuth",
+                            "Otimização de queries que melhoraram o desempenho em 40%",
+                            "Liderança de equipe de 5 desenvolvedores"
+                        ]
+                    },
+                    {
+                        "company": "TechSolutions",
+                        "role": "Desenvolvedor Backend",
+                        "timeline": "2015 - 2018",
+                        "description": "Desenvolvimento de APIs RESTful em Python/Django",
+                        "highlights": [
+                            "Criação de microserviços",
+                            "Integração com sistemas de pagamento",
+                            "Implementação de CI/CD"
+                        ]
                     }
-
-                # Save the processed JSON to S3
-                s3_client.put_object(
-                    Bucket=bucket_name,
-                    Key=json_output_file_key,
-                    Body=json.dumps(processed_data, indent=2),
-                    ContentType='application/json'
-                )
-
-            # Read the content of the output JSON file
-            response = s3_client.get_object(Bucket=bucket_name, Key=json_output_file_key)
-            content = response['Body'].read().decode('utf-8').strip()
-            if not content:
-                return Response({"error": "JSON file is empty"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            resume_data = json.loads(content)
-
-            return Response(resume_data)
+                ],
+                "skills": [
+                    "Python", "Django", "JavaScript", "React.js", "Docker", "AWS",
+                    "Git", "SQL", "MongoDB", "REST APIs", "Agile", "Scrum"
+                ],
+                "additional_information": {
+                    "languages": ["Português (nativo)", "Inglês (fluente)"],
+                    "interests": ["Desenvolvimento open source", "Machine Learning", "Hiking"],
+                    "availability": "Disponível para projetos imediatamente"
+                }
+            }
+            
+            return Response(sample_resume)
         except Exception as e:
             error_trace = traceback.format_exc()
             print(f"Error in ResumeAPIView: {e}\nTraceback:\n{error_trace}")

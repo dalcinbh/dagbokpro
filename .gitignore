@@ -61,6 +61,18 @@ pip-selfcheck.json
 media/
 staticfiles/
 
+# Django static files
+backend/files/
+backend/static/
+backend/media/
+backend/staticfiles/
+backend/collected_static/
+
+# Django admin and rest_framework static files
+backend/files/admin/
+backend/files/rest_framework/
+backend/files/account/
+
 # ==============================
 # Next.js
 # ==============================

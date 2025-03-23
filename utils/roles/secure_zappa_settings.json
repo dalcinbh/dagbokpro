@@ -1,0 +1,41 @@
+{
+    "dev": {
+      "aws_region": "us-east-2",
+      "django_settings": "dagbok.settings",
+      "app_function": "dagbok.wsgi.application",
+      "exclude": [
+        "boto3",
+        "dateutil",
+        "botocore",
+        "s3transfer",
+        "concurrent"
+      ],
+      "profile_name": "default",
+      "project_name": "dagbok-django",
+      "runtime": "python3.10",
+      "s3_bucket": "zappa-dagbok-dev",
+      "timeout_seconds": 120,
+      "memory_size": 512,
+      "slim_handler": true,
+      "keep_warm": true,
+      "keep_warm_expression": "rate(5 minutes)",
+      "log_retention_days": 30,
+      "debug": true,
+      "ephemeral_storage": {
+        "Size": 10240
+      },
+      "manage_roles": false,
+      "role_name": "dagbok-django-dev-ZappaLambdaExecutionRole",
+      "environment_variables": {
+        "AWS_STORAGE_BUCKET_NAME": "dagbok-resumes",
+        "AWS_S3_REGION_NAME": "us-east-2"
+      },
+      "remote_env": {
+        "dev": {
+          "API_KEY_DAGBOK": "VALOR_A_SER_CRIPTOGRAFADO"
+        }
+      },
+      "apigateway_description": "Dagbok API",
+      "apigateway_authorization_type": "IAM"
+    }
+} 
