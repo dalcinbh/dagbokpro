@@ -1,6 +1,7 @@
-version: "3"
+version: "3.8"
 
 services:
+  # Nginx Service (mantido da configuração original)
   nginx:
     build: ./docker/nginx
     ports:
@@ -10,3 +11,45 @@ services:
       - ./logs/nginx:/var/log/nginx
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - dagbok-network
+
+  # MongoDB Service
+  mongodb:
+    image: mongo:latest
+    container_name: dagbok-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=dagbok
+    command: mongod --noauth
+    restart: unless-stopped
+    networks:
+      - dagbok-network
+
+  # MongoDB Express Web Interface (opcional)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: dagbok-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH=false
+    depends_on:
+      - mongodb
+    networks:
+      - dagbok-network
+
+volumes:
+  mongodb_data:
+    name: dagbok-mongodb-data
+
+networks:
+  dagbok-network:
+    name: dagbok-network
+    driver: bridge

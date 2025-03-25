@@ -1,14 +1,12 @@
 /**
- * RootLayout component that defines the structure of the HTML document.
- *
- * @param {Object} props - The properties object.
- * @param {React.ReactNode} props.children - The child elements to be rendered within the body of the HTML document.
- * @returns {JSX.Element} The root layout component.
+ * Layout principal da aplicação
+ * Configura o provedor de autenticação e os metadados
  */
+
+import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
-import { Providers } from './providers';
+import { NextAuthProvider } from '@/providers/NextAuthProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,10 +17,14 @@ const inter = Inter({ subsets: ['latin'] });
  * @property {string} description - A brief description of the application.
  */
 export const metadata: Metadata = {
-  title: 'Dagbok',
-  description: 'Seu diário de desenvolvimento',
+  title: 'Dagbok - Seu Diário Digital',
+  description: 'Plataforma para gerenciamento de conteúdo e transcrições',
 };
 
+/**
+ * Layout raiz da aplicação
+ * Configuração global aplicada a todas as páginas
+ */
 export default function RootLayout({
   children,
 }: {
@@ -31,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <NextAuthProvider>{children}</NextAuthProvider>
       </body>
     </html>
   );

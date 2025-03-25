@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { auth, signInWithGoogle, signInWithGitHub, signInWithLinkedIn } from "@/lib/auth";
+import { signInWithGoogle, signInWithGitHub, signInWithLinkedIn } from "@/lib/auth";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
  */
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [linkedinError, setLinkedinError] = useState(false);
 
   /**
    * Server Action for Google Login
@@ -57,6 +58,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Error signing in with LinkedIn:', error);
       setIsLoading(false);
+      setLinkedinError(true);
     }
   }
 
@@ -88,6 +90,13 @@ export default function LoginPage() {
             <CardDescription className="text-center">Escolha seu método de login</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Mensagem de erro para LinkedIn */}
+            {linkedinError && (
+              <div className="bg-yellow-50 text-yellow-800 p-3 rounded-md mb-4 text-sm">
+                O login com LinkedIn está temporariamente indisponível. Por favor, use Google ou GitHub.
+              </div>
+            )}
+            
             {/* Google Login Button */}
             <Button 
               className="w-full flex items-center justify-center gap-3" 

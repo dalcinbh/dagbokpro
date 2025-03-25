@@ -31,7 +31,7 @@ const providers = [
     clientSecret: process.env.LINKEDIN_SECRET || "",
     authorization: {
       params: {
-        scope: 'openid profile email'
+        scope: "openid profile email"
       }
     }
   })
@@ -42,19 +42,34 @@ const providers = [
  */
 const handler = NextAuth({
   providers,
-  debug: process.env.NODE_ENV === "development",
+  debug: true, // Ativa o modo de debug
+  logger: {
+    error(code, metadata) {
+      console.error(`NextAuth error: ${code}`, metadata);
+    },
+    warn(code) {
+      console.warn(`NextAuth warning: ${code}`);
+    },
+    debug(code, metadata) {
+      console.log(`NextAuth debug: ${code}`, metadata);
+    }
+  },
   session: {
     strategy: "jwt"
   },
   callbacks: {
     async signIn({ user, account, profile }) {
       console.log("Login attempt:", { email: user.email, provider: account?.provider });
+      console.log("Account data:", account);
+      console.log("Profile data:", profile);
       return true;
     },
     async redirect({ url, baseUrl }) {
       console.log("Redirecting to:", url, "from:", baseUrl);
-      if (url.includes('/api/auth/callback') || url === baseUrl || url === '/' || url.startsWith(baseUrl)) {
-        return `${baseUrl}/blog`;
+      // Permite qualquer redirecionamento do provedor de autenticação
+      // e então direciona para o dashboard após autenticação bem-sucedida
+      if (url.startsWith(baseUrl) || url.includes('/api/auth/callback')) {
+        return `${baseUrl}/dashboard`;
       }
       return url;
     },
