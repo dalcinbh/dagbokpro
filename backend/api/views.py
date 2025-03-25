@@ -102,137 +102,57 @@ class ResumeAPIView(APIView):
     def process_with_deepseek(self, text, api_key):
         try:
             print("Processing text with DeepSeek API...")
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-        prompt = (
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            prompt = (
                 "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
                 "Extract and categorize the following sections:\n"
-                "Return in English a JSON object with the following sections:\n"
-                "- 'title': The person's name and professional title (e.g., 'Adriano Alves - Software Engineer').\n"
-                "- 'summary': An object with 'professional_summary' (a brief overview of the person's career). Do NOT include a 'key_skills' field here, as skills should only be in the 'skills' section.\n"
-                "- 'education': An object where each key is an institution name, with the value being either a single string (e.g., 'Bachelor of Computer Science (2014-2018)') or a list of strings if multiple degrees are mentioned.\n"
-                "- 'experience': A list of objects, each describing a professional experience with the following fields: 'company' (company name), 'role', 'timeline', 'description', and 'highlights' (a list of achievements). Extract this from job history or narrative text.\n"
-                "- 'skills': A list of technical and soft skills mentioned anywhere in the text (e.g., ['JavaScript', 'Leadership']). This should be the only section containing skills.\n"
-                "- 'additional_information': An object with fields like 'languages', 'citizenship', 'availability', and 'interests' if present.\n"
-                "Ensure that 'experience' and 'skills' are always populated if relevant information exists in the text. If the text mentions jobs or roles, include them in the 'experience' section with full details. If skills are mentioned (e.g., 'experienced in JavaScript', 'leadership skills'), list them in the 'skills' section. "
-                "Return a valid JSON object with these sections.\n\n"
+                "Return in English a JSON object with these sections.\n\n"
                 f"Unstructured resume text:\n\n{text}"
             )
             payload = {
-                "model": "deepseek-chat",  # Replace with the correct DeepSeek model
-            "messages": [
+                "model": "deepseek-chat",
+                "messages": [
                     {"role": "system", "content": "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format."},
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.7
-        }
-
-            # Send the request to the DeepSeek API
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.7
+            }
             response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=payload, timeout=3000)
-            response.raise_for_status()  # Raise an exception for 4xx/5xx status codes
-
-            # Log the full API response
-            print("API Response:", response.text)
-
-            # Decode the response as JSON
+            response.raise_for_status()
             result = response.json()
-
-            # Check if the response contains the expected structure
-            if not result.get('choices'):
-                print("No 'choices' found in the API response.")
-                return None
-
-            content = result['choices'][0]['message']['content']
-            print(f"DeepSeek response:\n{content}")  # Log for debugging
-
-            # Extract JSON from the Markdown code block
-            json_match = re.search(r'```json\s*({.*?})\s*```', content, re.DOTALL)
-            if not json_match:
-                print("No JSON found in the 'content'.")
-                return None
-
-            json_str = json_match.group(1)  # Extract JSON string
-            return json.loads(json_str)  # Decode the extracted JSON
-
-        except requests.exceptions.HTTPError as e:
-            error_response = response.text if response else "No response from server"
-            print(f"HTTPError: {e}. Response: {error_response}")
-            return None
-        except requests.exceptions.Timeout as e:
-            print(f"TimeoutError: The request timed out. {e}")
-            return None
-        except json.JSONDecodeError as e:
-            print(f"JSONDecodeError: {e}. Response content is not valid JSON.")
-            return None
+            return result
         except Exception as e:
-            error_trace = traceback.format_exc()
-            print(f"Error processing with DeepSeek: {e}\nTraceback:\n{error_trace}")
+            print(f"Error in DeepSeek processing: {str(e)}")
             return None
 
     def process_with_chatgpt(self, text, api_key):
         try:
             print("Processing text with ChatGPT API...")
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
-        prompt = (
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            prompt = (
                 "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
                 "Extract and categorize the following sections:\n"
-                "- 'title': The person's name and professional title (e.g., 'Adriano Alves - Software Engineer').\n"
-                "- 'summary': An object with 'professional_summary' (a brief overview of the person's career). Do NOT include a 'key_skills' field here, as skills should only be in the 'skills' section.\n"
-                "- 'education': An object where each key is an institution name, with the value being either a single string (e.g., 'Bachelor of Computer Science (2014-2018)') or a list of strings if multiple degrees are mentioned.\n"
-                "- 'experience': A list of objects, each describing a professional experience with the following fields: 'company' (company name), 'role', 'timeline', 'description', and 'highlights' (a list of achievements). Extract this from job history or narrative text.\n"
-                "- 'skills': A list of technical and soft skills mentioned anywhere in the text (e.g., ['JavaScript', 'Leadership']). This should be the only section containing skills.\n"
-                "- 'additional_information': An object with fields like 'languages', 'citizenship', 'availability', and 'interests' if present.\n"
-                "Ensure that 'experience' and 'skills' are always populated if relevant information exists in the text. If the text mentions jobs or roles, include them in the 'experience' section with full details. If skills are mentioned (e.g., 'experienced in JavaScript', 'leadership skills'), list them in the 'skills' section. "
-                "Return a valid JSON object with these sections.\n\n"
+                "Return in English a JSON object with these sections.\n\n"
                 f"Unstructured resume text:\n\n{text}"
             )
             payload = {
-            "model": "gpt-3.5-turbo",
-            "messages": [
+                "model": "gpt-3.5-turbo",
+                "messages": [
                     {"role": "system", "content": "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format."},
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.7
-        }
-
-            # Send the request to the ChatGPT API with a timeout
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.7
+            }
             response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=3000)
-            response.raise_for_status()  # Raise an exception for 4xx/5xx status codes
-
-            # Log the full API response
-            print("API Response:", response.text)
-
-            # Decode the response as JSON
+            response.raise_for_status()
             result = response.json()
-
-            # Check if the response contains the expected structure
-            if not result.get('choices'):
-                print("No 'choices' found in the API response.")
-                return None
-
-            content = result['choices'][0]['message']['content']
-            print(f"ChatGPT response:\n{content}")  # Log for debugging
-
-            # Try to decode the content as JSON
-            try:
-            return json.loads(content)
-            except json.JSONDecodeError as e:
-                print(f"JSONDecodeError: {e}. Response content is not valid JSON.")
-                return None
-
-        except requests.exceptions.HTTPError as e:
-            error_response = response.text if response else "No response from server"
-            print(f"HTTPError: {e}. Response: {error_response}")
-            return None
-        except requests.exceptions.Timeout as e:
-            print(f"TimeoutError: The request timed out. {e}")
-            return None
+            return result
         except Exception as e:
-            error_trace = traceback.format_exc()
-            print(f"Error processing with ChatGPT: {e}\nTraceback:\n{error_trace}")
+            print(f"Error in ChatGPT processing: {str(e)}")
             return None
