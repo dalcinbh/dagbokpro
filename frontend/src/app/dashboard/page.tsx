@@ -1,73 +1,58 @@
-'use client';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth, signOutUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-export default function Dashboard() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
-
-  if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
-        </div>
-      </div>
-    );
+/**
+ * Dashboard Page Component
+ * This is a protected page that can only be accessed by authenticated users
+ * It displays user information and provides logout functionality
+ */
+export default async function Dashboard() {
+  // Get the current session
+  const session = await auth();
+  
+  // Redirect to home if not authenticated
+  if (!session) {
+    redirect('/login');
   }
 
-  if (!session) {
-    return null; // O useEffect redirecionará para a página de login
+  /**
+   * Server Action for Sign Out
+   * This function is called when the logout button is clicked
+   * It ends the user session and redirects to the home page
+   */
+  async function signOutAction() {
+    'use server';
+    await signOutUser();
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
-            <div className="flex items-center">
-              <span className="text-sm text-gray-700 mr-4">
-                Bem-vindo, {session.user?.name || session.user?.email}
-              </span>
-              <button
-                onClick={() => router.push('/api/auth/signout')}
-                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Sair
-              </button>
-            </div>
+    // Main container with centered content and gray background
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      {/* Dashboard card displaying user info */}
+      <Card className="w-[350px]">
+        <CardHeader className="flex flex-col items-center">
+          <Avatar className="w-24 h-24 mb-4">
+            <AvatarImage src={session.user?.image || ""} />
+            <AvatarFallback>{session.user?.name?.[0] || "U"}</AvatarFallback>
+          </Avatar>
+          <CardTitle>{session.user?.name || "Usuário"}</CardTitle>
+          <CardDescription>{session.user?.email || ""}</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+          {/* User information display */}
+          <div className="mb-4">
+            <p><strong>Nome:</strong> {session.user?.name}</p>
+            <p><strong>Email:</strong> {session.user?.email}</p>
           </div>
-        </div>
-      </header>
-      <main>
-        <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="rounded-lg border-4 border-dashed border-gray-200 p-6">
-              <h2 className="text-xl font-semibold mb-4">Seus currículos</h2>
-              <p className="text-gray-500">
-                Você ainda não possui currículos cadastrados. Crie seu primeiro currículo para começar.
-              </p>
-              <div className="mt-6">
-                <button
-                  className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Criar currículo
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+          {/* Logout button */}
+          <form action={signOutAction}>
+            <Button variant='destructive'>Logout</Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 } 

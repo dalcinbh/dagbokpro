@@ -1,16 +1,64 @@
 'use client';
 
-import { signIn } from '../../lib/next-auth';
-import Image from 'next/image';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth, signInWithGoogle, signInWithGitHub, signInWithLinkedIn } from "@/lib/auth";
+import Image from "next/image";
+import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
 
+/**
+ * Login Page Component
+ * This is the main entry point for authentication
+ * It handles the social login buttons and their actions
+ */
 export default function LoginPage() {
-  const handleSocialLogin = async (provider: string) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  /**
+   * Server Action for Google Login
+   * This function is called when the Google login button is clicked
+   * It initiates the OAuth flow with Google
+   */
+  async function signInGoogleAction() {
+    setIsLoading(true);
     try {
-      await signIn(provider, { callbackUrl: '/' });
+      await signInWithGoogle();
     } catch (error) {
-      console.error(`Error signing in with ${provider}:`, error);
+      console.error('Error signing in with Google:', error);
+      setIsLoading(false);
     }
-  };
+  }
+
+  /**
+   * Server Action for GitHub Login
+   * This function is called when the GitHub login button is clicked
+   * It initiates the OAuth flow with GitHub
+   */
+  async function signInGitHubAction() {
+    setIsLoading(true);
+    try {
+      await signInWithGitHub();
+    } catch (error) {
+      console.error('Error signing in with GitHub:', error);
+      setIsLoading(false);
+    }
+  }
+
+  /**
+   * Server Action for LinkedIn Login
+   * This function is called when the LinkedIn login button is clicked
+   * It initiates the OAuth flow with LinkedIn
+   */
+  async function signInLinkedInAction() {
+    setIsLoading(true);
+    try {
+      await signInWithLinkedIn();
+    } catch (error) {
+      console.error('Error signing in with LinkedIn:', error);
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -34,11 +82,17 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-2xl rounded-xl sm:px-10 border border-gray-100">
-          <div className="space-y-4">
-            <button
-              onClick={() => handleSocialLogin('google')}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center">Login Social</CardTitle>
+            <CardDescription className="text-center">Escolha seu método de login</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Google Login Button */}
+            <Button 
+              className="w-full flex items-center justify-center gap-3" 
+              onClick={signInGoogleAction}
+              disabled={isLoading}
             >
               <Image
                 src="/google.svg"
@@ -48,11 +102,14 @@ export default function LoginPage() {
                 className="w-5 h-5"
               />
               <span>Continuar com Google</span>
-            </button>
+            </Button>
 
-            <button
-              onClick={() => handleSocialLogin('github')}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+            {/* GitHub Login Button */}
+            <Button 
+              className="w-full flex items-center justify-center gap-3" 
+              variant="outline"
+              onClick={signInGitHubAction}
+              disabled={isLoading}
             >
               <Image
                 src="/github.svg"
@@ -62,9 +119,26 @@ export default function LoginPage() {
                 className="w-5 h-5"
               />
               <span>Continuar com GitHub</span>
-            </button>
-          </div>
-        </div>
+            </Button>
+
+            {/* LinkedIn Login Button */}
+            <Button 
+              className="w-full flex items-center justify-center gap-3" 
+              variant="secondary"
+              onClick={signInLinkedInAction}
+              disabled={isLoading}
+            >
+              <Image
+                src="/linkedin.svg"
+                alt="LinkedIn"
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
+              <span>Continuar com LinkedIn</span>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

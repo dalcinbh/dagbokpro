@@ -1,77 +1,74 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import GithubProvider from 'next-auth/providers/github';
-import CredentialsProvider from 'next-auth/providers/credentials';
+// Implementação de API Route para NextAuth.js com App Router
+// Este arquivo é responsável por gerenciar todas as rotas de autenticação
+// em /api/auth/*, incluindo callbacks, login, logout, etc.
 
-// Configuração dos providers
-const providers = [];
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
+import LinkedIn from "next-auth/providers/linkedin";
 
-// Adiciona Google Provider se as credenciais estiverem disponíveis
-if (process.env.GOOGLE_ID && process.env.GOOGLE_SECRET) {
-  providers.push(
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-    })
-  );
-}
-
-// Adiciona GitHub Provider se as credenciais estiverem disponíveis
-if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
-  providers.push(
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    })
-  );
-}
-
-// Adiciona Credentials Provider para desenvolvimento
-providers.push(
-  CredentialsProvider({
-    name: 'Credentials',
-    credentials: {
-      email: { label: "Email", type: "email" },
-      password: { label: "Senha", type: "password" }
-    },
-    async authorize(credentials) {
-      // Para fins de desenvolvimento, aceita qualquer credencial
-      if (credentials?.email) {
-        return {
-          id: "1",
-          name: "Usuário Teste",
-          email: credentials.email,
-          image: "https://via.placeholder.com/150"
-        };
+/**
+ * Configuração dos provedores de autenticação OAuth
+ */
+const providers = [
+  Google({
+    clientId: process.env.GOOGLE_CLIENT_ID || "",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    authorization: {
+      params: {
+        prompt: "consent",
+        access_type: "offline",
+        response_type: "code"
       }
-      return null;
+    }
+  }),
+  GitHub({
+    clientId: process.env.GITHUB_ID || "",
+    clientSecret: process.env.GITHUB_SECRET || "",
+  }),
+  LinkedIn({
+    clientId: process.env.LINKEDIN_ID || "",
+    clientSecret: process.env.LINKEDIN_SECRET || "",
+    authorization: {
+      params: {
+        scope: 'openid profile email'
+      }
     }
   })
-);
+];
 
-export const authOptions: NextAuthOptions = {
+/**
+ * Configuração do NextAuth com manipuladores de autenticação
+ */
+const handler = NextAuth({
   providers,
-  secret: process.env.NEXTAUTH_SECRET || 'mysecretfortesting',
+  debug: process.env.NODE_ENV === "development",
+  session: {
+    strategy: "jwt"
+  },
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log("Login attempt:", { email: user.email, provider: account?.provider });
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      console.log("Redirecting to:", url, "from:", baseUrl);
+      if (url.includes('/api/auth/callback') || url === baseUrl || url === '/' || url.startsWith(baseUrl)) {
+        return `${baseUrl}/blog`;
+      }
+      return url;
+    },
+    async session({ session }) {
+      console.log("Session created:", session);
+      return session;
+    }
+  },
   pages: {
     signIn: '/login',
     error: '/login',
-  },
-  debug: true,
-  session: {
-    strategy: 'jwt',
-  },
-  callbacks: {
-    async jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      return session;
-    },
-  },
-};
+    signOut: '/'
+  }
+});
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST }; 
+// Exportação direta dos handlers GET e POST para App Router
+export { handler as GET, handler as POST };

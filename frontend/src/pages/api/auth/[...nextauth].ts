@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions, Session, User, Account } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
 
 interface ExtendedUser extends User {
@@ -12,17 +13,53 @@ interface ExtendedSession extends Session {
   user: ExtendedUser;
 }
 
-export const authOptions: NextAuthOptions = {
-  providers: [
+// Define os providers para autenticação
+const providers = [];
+
+// Adiciona Google Provider
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
+  );
+}
+
+// Adiciona GitHub Provider
+if (process.env.GITHUB_ID && process.env.GITHUB_SECRET) {
+  providers.push(
     GitHubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-    }),
-  ],
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    })
+  );
+}
+
+// Adiciona Credentials Provider para desenvolvimento
+providers.push(
+  CredentialsProvider({
+    name: 'Credentials',
+    credentials: {
+      email: { label: "Email", type: "email" },
+      password: { label: "Senha", type: "password" }
+    },
+    async authorize(credentials) {
+      if (credentials?.email) {
+        return {
+          id: "1",
+          name: "Usuário Teste",
+          email: credentials.email,
+          image: "https://via.placeholder.com/150"
+        };
+      }
+      return null;
+    }
+  })
+);
+
+export const authOptions: NextAuthOptions = {
+  providers,
   pages: {
     signIn: '/login',
     error: '/auth/error',
