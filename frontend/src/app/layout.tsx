@@ -6,8 +6,11 @@
  * @returns {JSX.Element} The root layout component.
  */
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import { Providers } from './client-providers';
+import { Providers } from './providers';
+
+const inter = Inter({ subsets: ['latin'] });
 
 /**
  * Metadata for the application layout.
@@ -16,8 +19,8 @@ import { Providers } from './client-providers';
  * @property {string} description - A brief description of the application.
  */
 export const metadata: Metadata = {
-  title: 'Dagbok | Gerenciador de Currículos',
-  description: 'Sistema de gerenciamento de currículos e resumos profissionais',
+  title: 'Dagbok',
+  description: 'Seu diário de desenvolvimento',
 };
 
 export default function RootLayout({
@@ -27,10 +30,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>
-        <Providers>
-          {children}
-        </Providers>
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

@@ -102,11 +102,11 @@ class ResumeAPIView(APIView):
     def process_with_deepseek(self, text, api_key):
         try:
             print("Processing text with DeepSeek API...")
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            prompt = (
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        prompt = (
                 "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
                 "Extract and categorize the following sections:\n"
                 "Return in English a JSON object with the following sections:\n"
@@ -122,12 +122,12 @@ class ResumeAPIView(APIView):
             )
             payload = {
                 "model": "deepseek-chat",  # Replace with the correct DeepSeek model
-                "messages": [
+            "messages": [
                     {"role": "system", "content": "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format."},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.7
-            }
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.7
+        }
 
             # Send the request to the DeepSeek API
             response = requests.post("https://api.deepseek.com/v1/chat/completions", headers=headers, json=payload, timeout=3000)
@@ -174,11 +174,11 @@ class ResumeAPIView(APIView):
     def process_with_chatgpt(self, text, api_key):
         try:
             print("Processing text with ChatGPT API...")
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            prompt = (
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        prompt = (
                 "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format. "
                 "Extract and categorize the following sections:\n"
                 "- 'title': The person's name and professional title (e.g., 'Adriano Alves - Software Engineer').\n"
@@ -192,13 +192,13 @@ class ResumeAPIView(APIView):
                 f"Unstructured resume text:\n\n{text}"
             )
             payload = {
-                "model": "gpt-3.5-turbo",
-                "messages": [
+            "model": "gpt-3.5-turbo",
+            "messages": [
                     {"role": "system", "content": "You are a helpful assistant that interprets unstructured resume text and structures it into a JSON format."},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.7
-            }
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.7
+        }
 
             # Send the request to the ChatGPT API with a timeout
             response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=3000)
@@ -220,7 +220,7 @@ class ResumeAPIView(APIView):
 
             # Try to decode the content as JSON
             try:
-                return json.loads(content)
+            return json.loads(content)
             except json.JSONDecodeError as e:
                 print(f"JSONDecodeError: {e}. Response content is not valid JSON.")
                 return None
