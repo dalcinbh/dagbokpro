@@ -1,0 +1,102 @@
+{
+  "appName": "Dagbok",
+  "common": {
+    "loading": "Laddar...",
+    "error": "Ett fel uppstod",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "create": "Skapa",
+    "submit": "Skicka",
+    "search": "Sök",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "previous": "Föregående",
+    "yes": "Ja",
+    "no": "Nej",
+    "close": "Stäng",
+    "logout": "Logga ut"
+  },
+  "auth": {
+    "login": "Logga in",
+    "loginWith": "Logga in med",
+    "register": "Registrera",
+    "email": "E-post",
+    "password": "Lösenord",
+    "forgotPassword": "Glömt lösenord",
+    "resetPassword": "Återställ lösenord",
+    "name": "Namn",
+    "confirmPassword": "Bekräfta lösenord",
+    "alreadyHaveAccount": "Har du redan ett konto?",
+    "dontHaveAccount": "Har du inget konto?",
+    "passwordsDontMatch": "Lösenorden matchar inte",
+    "invalidCredentials": "Ogiltiga inloggningsuppgifter",
+    "accountCreated": "Kontot har skapats",
+    "passwordReset": "Lösenordet har återställts",
+    "passwordResetSent": "En länk för återställning av lösenord har skickats till din e-post",
+    "profile": "Profil",
+    "restrictedAccess": "Begränsad åtkomst",
+    "needLogin": "Du måste vara inloggad för att komma åt denna sida",
+    "signIn": "Logga in",
+    "signOut": "Logga ut"
+  },
+  "nav": {
+    "home": "Hem",
+    "dashboard": "Översikt",
+    "blog": "Blogg",
+    "about": "Om",
+    "contact": "Kontakt",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "posts": "Inlägg",
+    "newPost": "Nytt inlägg",
+    "transcriptions": "Transkriptioner",
+    "newTranscription": "Ny transkription"
+  },
+  "footer": {
+    "allRightsReserved": "Alla rättigheter förbehållna"
+  },
+  "language": {
+    "changeLanguage": "Byt språk",
+    "english": "Engelska",
+    "portuguese": "Portugisiska",
+    "swedish": "Svenska"
+  },
+  "homepage": {
+    "welcome": "Välkommen",
+    "subtitle": "Din personliga dagbok och bloggplattform",
+    "getStarted": "Kom igång",
+    "features": "Funktioner",
+    "multipleLanguages": "Flera språk",
+    "languageDescription": "Använd Dagbok på ditt föredragna språk. För närvarande stöds engelska, portugisiska och svenska."
+  },
+  "features": {
+    "blog": {
+      "title": "Blogg",
+      "description": "Skapa och dela dina inlägg med världen."
+    },
+    "journal": {
+      "title": "Dagbok",
+      "description": "Håll koll på dina dagliga tankar och aktiviteter."
+    },
+    "multilingual": {
+      "title": "Flerspråkig",
+      "description": "Stöd för engelska, portugisiska och svenska."
+    },
+    "social": {
+      "title": "Social",
+      "description": "Anslut med vänner och dela dina upplevelser."
+    }
+  },
+  "navigation": {
+    "home": "Hem",
+    "dashboard": "Översikt",
+    "posts": "Inlägg",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "viewAllPosts": "Visa alla blogginlägg",
+    "createNewPost": "Skapa ett nytt blogginlägg"
+  },
+  "toggleMenu": "Växla meny"
+} 

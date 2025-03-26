@@ -7,6 +7,11 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { NextAuthProvider } from '@/providers/NextAuthProvider';
+import { Providers } from './providers';
+import LanguageSelector from '@/components/LanguageSelector';
+import Link from 'next/link';
+import { CalendarDays } from 'lucide-react';
+import UserNav from '@/components/UserNav';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,9 +36,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={inter.className}>
-        <NextAuthProvider>{children}</NextAuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased`}>
+        <Providers>
+          <div className="min-h-screen flex flex-col">
+            <header className="border-b">
+              <div className="container mx-auto flex h-16 items-center justify-between px-4">
+                <Link href="/" className="flex items-center space-x-2">
+                  <CalendarDays className="h-6 w-6" />
+                  <span className="font-semibold">Dagbok</span>
+                </Link>
+                <div className="flex items-center space-x-4">
+                  <LanguageSelector />
+                  <UserNav />
+                </div>
+              </div>
+            </header>
+            <main className="flex-1">
+              {children}
+            </main>
+            <footer className="border-t py-4">
+              <div className="container mx-auto text-center text-sm text-muted-foreground">
+                © 2024 Dagbok. All rights reserved.
+              </div>
+            </footer>
+          </div>
+        </Providers>
       </body>
     </html>
   );

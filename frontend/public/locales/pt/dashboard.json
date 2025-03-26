@@ -1,0 +1,22 @@
+{
+  "welcome": "Bem-vindo",
+  "stats": "Estatísticas",
+  "recentPosts": "Posts Recentes",
+  "recentTranscriptions": "Transcrições Recentes",
+  "totalPosts": "Total de Posts",
+  "totalDrafts": "Total de Rascunhos",
+  "totalPublished": "Total Publicados",
+  "totalTranscriptions": "Total de Transcrições",
+  "noPosts": "Nenhum post encontrado",
+  "noTranscriptions": "Nenhuma transcrição encontrada",
+  "createNewPost": "Criar Novo Post",
+  "createNewTranscription": "Nova Transcrição",
+  "viewAll": "Ver Todos",
+  "user": "Usuário",
+  "greeting": "Bem-vindo, {{name}}!",
+  "userAvatar": "Avatar do usuário",
+  "categories": "Categorias",
+  "quickActions": "Ações Rápidas",
+  "createNewPostDescription": "Adicione um novo post ao blog",
+  "createNewTranscriptionDescription": "Envie um texto para transcrição"
+} 

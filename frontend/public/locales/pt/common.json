@@ -1,0 +1,102 @@
+{
+  "appName": "Dagbok",
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "yes": "Sim",
+    "no": "Não",
+    "close": "Fechar",
+    "logout": "Sair"
+  },
+  "auth": {
+    "login": "Entrar",
+    "loginWith": "Entrar com",
+    "register": "Registrar",
+    "email": "Email",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu a senha",
+    "resetPassword": "Redefinir senha",
+    "name": "Nome",
+    "confirmPassword": "Confirmar senha",
+    "alreadyHaveAccount": "Já tem uma conta?",
+    "dontHaveAccount": "Não tem uma conta?",
+    "passwordsDontMatch": "As senhas não coincidem",
+    "invalidCredentials": "Credenciais inválidas",
+    "accountCreated": "Conta criada com sucesso",
+    "passwordReset": "Senha redefinida com sucesso",
+    "passwordResetSent": "Link para redefinição de senha enviado para seu email",
+    "profile": "Perfil",
+    "restrictedAccess": "Acesso Restrito",
+    "needLogin": "Você precisa estar logado para acessar esta página",
+    "signIn": "Entrar",
+    "signOut": "Sair"
+  },
+  "nav": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "blog": "Blog",
+    "about": "Sobre",
+    "contact": "Contato",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "posts": "Posts",
+    "newPost": "Novo Post",
+    "transcriptions": "Transcrições",
+    "newTranscription": "Nova Transcrição"
+  },
+  "footer": {
+    "allRightsReserved": "Todos os direitos reservados"
+  },
+  "language": {
+    "changeLanguage": "Alterar Idioma",
+    "english": "Inglês",
+    "portuguese": "Português",
+    "swedish": "Sueco"
+  },
+  "homepage": {
+    "welcome": "Bem-vindo",
+    "subtitle": "Sua plataforma pessoal de diário e blog",
+    "getStarted": "Começar",
+    "features": "Funcionalidades",
+    "multipleLanguages": "Múltiplos Idiomas",
+    "languageDescription": "Use o Dagbok em seu idioma preferido. Atualmente suportando Inglês, Português e Sueco."
+  },
+  "features": {
+    "blog": {
+      "title": "Blog",
+      "description": "Crie e compartilhe seus posts com o mundo."
+    },
+    "journal": {
+      "title": "Diário",
+      "description": "Acompanhe seus pensamentos e atividades diárias."
+    },
+    "multilingual": {
+      "title": "Multilíngue",
+      "description": "Suporte para Inglês, Português e Sueco."
+    },
+    "social": {
+      "title": "Social",
+      "description": "Conecte-se com amigos e compartilhe suas experiências."
+    }
+  },
+  "navigation": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "posts": "Posts",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "viewAllPosts": "Ver todos os posts do blog",
+    "createNewPost": "Criar um novo post no blog"
+  },
+  "toggleMenu": "Alternar Menu"
+} 

@@ -10,10 +10,12 @@ import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/i18n';
 
 export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const { t } = useTranslation('common');
 
   /**
    * Toggle do menu mobile
@@ -41,11 +43,11 @@ export default function Navigation() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/dashboard" className="-m-1.5 p-1.5">
-            <span className="sr-only">Dagbok</span>
+            <span className="sr-only">{t('appName')}</span>
             <Image 
               className="h-8 w-auto" 
               src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" 
-              alt="Dagbok Logo"
+              alt={`${t('appName')} Logo`}
               width={32}
               height={32}
             />
@@ -57,7 +59,7 @@ export default function Navigation() {
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
             onClick={toggleMobileMenu}
           >
-            <span className="sr-only">Abrir menu principal</span>
+            <span className="sr-only">{t('toggleMenu')}</span>
             <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
@@ -71,7 +73,7 @@ export default function Navigation() {
               aria-expanded={productMenuOpen}
               onClick={toggleProductMenu}
             >
-              Blog
+              {t('nav.blog')}
               <svg className="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
                 <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
               </svg>
@@ -88,10 +90,10 @@ export default function Navigation() {
                     </div>
                     <div className="flex-auto">
                       <Link href="/blog" className="block font-semibold text-gray-900">
-                        Todos os Posts
+                        {t('nav.posts')}
                         <span className="absolute inset-0"></span>
                       </Link>
-                      <p className="mt-1 text-gray-600">Visualizar todos os posts do blog</p>
+                      <p className="mt-1 text-gray-600">{t('navigation.viewAllPosts')}</p>
                     </div>
                   </div>
 
@@ -103,10 +105,10 @@ export default function Navigation() {
                     </div>
                     <div className="flex-auto">
                       <Link href="/blog/novo" className="block font-semibold text-gray-900">
-                        Novo Post
+                        {t('nav.newPost')}
                         <span className="absolute inset-0"></span>
                       </Link>
-                      <p className="mt-1 text-gray-600">Criar um novo post no blog</p>
+                      <p className="mt-1 text-gray-600">{t('navigation.createNewPost')}</p>
                     </div>
                   </div>
                 </div>
@@ -115,13 +117,13 @@ export default function Navigation() {
                     <svg className="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
                       <path fillRule="evenodd" d="M2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm6.39-2.908a.75.75 0 0 1 .766.027l3.5 2.25a.75.75 0 0 1 0 1.262l-3.5 2.25A.75.75 0 0 1 8 12.25v-4.5a.75.75 0 0 1 .39-.658Z" clipRule="evenodd" />
                     </svg>
-                    Dashboard
+                    {t('nav.dashboard')}
                   </Link>
                   <Link href="/transcricoes" className="flex items-center justify-center gap-x-2.5 p-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-100">
                     <svg className="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
                       <path fillRule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clipRule="evenodd" />
                     </svg>
-                    Transcrições
+                    {t('nav.transcriptions')}
                   </Link>
                 </div>
               </div>
@@ -129,13 +131,13 @@ export default function Navigation() {
           </div>
 
           <Link href="/blog" className="text-sm/6 font-semibold text-gray-900">
-            Blog
+            {t('nav.blog')}
           </Link>
           <Link href="/transcricoes" className="text-sm/6 font-semibold text-gray-900">
-            Transcrições
+            {t('nav.transcriptions')}
           </Link>
           <Link href="/dashboard" className="text-sm/6 font-semibold text-gray-900">
-            Dashboard
+            {t('nav.dashboard')}
           </Link>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
@@ -143,7 +145,7 @@ export default function Navigation() {
             onClick={handleLogout} 
             className="text-sm/6 font-semibold text-gray-900"
           >
-            Sair <span aria-hidden="true">&rarr;</span>
+            {t('common.logout')} <span aria-hidden="true">&rarr;</span>
           </button>
         </div>
       </nav>
@@ -155,11 +157,11 @@ export default function Navigation() {
           <div className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
               <Link href="/dashboard" className="-m-1.5 p-1.5">
-                <span className="sr-only">Dagbok</span>
+                <span className="sr-only">{t('appName')}</span>
                 <Image 
                   className="h-8 w-auto" 
                   src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600" 
-                  alt="Dagbok Logo"
+                  alt={`${t('appName')} Logo`}
                   width={32}
                   height={32}
                 />
@@ -169,7 +171,7 @@ export default function Navigation() {
                 className="-m-2.5 rounded-md p-2.5 text-gray-700"
                 onClick={toggleMobileMenu}
               >
-                <span className="sr-only">Fechar menu</span>
+                <span className="sr-only">{t('common.close')}</span>
                 <svg className="size-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
@@ -181,12 +183,12 @@ export default function Navigation() {
                   <div className="-mx-3">
                     <button 
                       type="button" 
-                      className="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50" 
+                      className="flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                       aria-controls="disclosure-1" 
                       aria-expanded={productMenuOpen}
                       onClick={toggleProductMenu}
                     >
-                      Blog
+                      {t('nav.blog')}
                       <svg 
                         className={`size-5 flex-none ${productMenuOpen ? 'rotate-180' : ''}`} 
                         viewBox="0 0 20 20" 
@@ -205,14 +207,14 @@ export default function Navigation() {
                           className="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
                           onClick={() => setMobileMenuOpen(false)}
                         >
-                          Todos os Posts
+                          {t('nav.posts')}
                         </Link>
                         <Link 
                           href="/blog/novo" 
                           className="block rounded-lg py-2 pr-3 pl-6 text-sm/7 font-semibold text-gray-900 hover:bg-gray-50"
                           onClick={() => setMobileMenuOpen(false)}
                         >
-                          Novo Post
+                          {t('nav.newPost')}
                         </Link>
                       </div>
                     )}
@@ -222,21 +224,21 @@ export default function Navigation() {
                     className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Blog
+                    {t('nav.blog')}
                   </Link>
                   <Link 
                     href="/transcricoes" 
                     className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Transcrições
+                    {t('nav.transcriptions')}
                   </Link>
                   <Link 
                     href="/dashboard" 
                     className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Dashboard
+                    {t('nav.dashboard')}
                   </Link>
                 </div>
                 <div className="py-6">
@@ -244,7 +246,7 @@ export default function Navigation() {
                     onClick={handleLogout}
                     className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 w-full text-left"
                   >
-                    Sair
+                    {t('common.logout')}
                   </button>
                 </div>
               </div>

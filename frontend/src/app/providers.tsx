@@ -1,19 +1,31 @@
+/**
+ * Providers component
+ * Wraps the application with all necessary context providers
+ */
+
 'use client';
 
+import { ReactNode } from 'react';
 import { SessionProvider } from 'next-auth/react';
-import { useEffect } from 'react';
+import { LanguageProvider } from '@/lib/i18n/LanguageContext';
+import { ThemeProvider } from 'next-themes';
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    // Configura o endpoint do NextAuth no lado do cliente
-    window.__NEXTAUTH = {
-      basePath: '/slogin/auth'
-    };
-  }, []);
+interface ProvidersProps {
+  children: ReactNode;
+}
 
+export function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      {children}
+      <LanguageProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          {children}
+        </ThemeProvider>
+      </LanguageProvider>
     </SessionProvider>
   );
 } 

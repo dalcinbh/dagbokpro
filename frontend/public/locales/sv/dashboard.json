@@ -1,0 +1,22 @@
+{
+  "welcome": "Välkommen",
+  "stats": "Statistik",
+  "recentPosts": "Senaste Inlägg",
+  "recentTranscriptions": "Senaste Transkriptioner",
+  "totalPosts": "Totalt Inlägg",
+  "totalDrafts": "Totalt Utkast",
+  "totalPublished": "Totalt Publicerade",
+  "totalTranscriptions": "Totalt Transkriptioner",
+  "noPosts": "Inga inlägg hittades",
+  "noTranscriptions": "Inga transkriptioner hittades",
+  "createNewPost": "Skapa Nytt Inlägg",
+  "createNewTranscription": "Skapa Ny Transkription",
+  "viewAll": "Visa Alla",
+  "user": "Användare",
+  "greeting": "Välkommen, {{name}}!",
+  "userAvatar": "Användarens avatar",
+  "categories": "Kategorier",
+  "quickActions": "Snabbåtgärder",
+  "createNewPostDescription": "Lägg till ett nytt inlägg på din blogg",
+  "createNewTranscriptionDescription": "Skicka in text för transkription"
+} 

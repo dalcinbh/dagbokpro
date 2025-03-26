@@ -1,6 +1,6 @@
 /**
- * Página de Dashboard
- * Exibe informações do usuário logado e estatísticas
+ * Dashboard Page
+ * Displays logged-in user information and statistics
  */
 
 'use client';
@@ -8,10 +8,11 @@
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from '@/i18n';
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout';
 
 /**
- * Componente de Card estatístico
+ * Stat Card component
  */
 interface StatCardProps {
   title: string;
@@ -34,23 +35,24 @@ function StatCard({ title, value, icon }: StatCardProps) {
 }
 
 /**
- * Página principal do Dashboard
+ * Main Dashboard Page
  */
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const { t } = useTranslation(['dashboard', 'common']);
   const user = session?.user;
 
   return (
     <AuthenticatedLayout>
       <div className="space-y-8">
-        {/* Cabeçalho */}
+        {/* Header */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0 mr-4">
               {user?.image ? (
                 <Image
                   src={user.image}
-                  alt={user.name || 'Avatar do usuário'}
+                  alt={user.name || t('dashboard:userAvatar')}
                   width={64}
                   height={64}
                   className="rounded-full"
@@ -65,17 +67,17 @@ export default function DashboardPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Bem-vindo, {user?.name || user?.email?.split('@')[0] || 'Usuário'}!
+                {t('dashboard:greeting', { name: user?.name || user?.email?.split('@')[0] || t('dashboard:user') })}
               </h1>
               <p className="text-gray-600">{user?.email}</p>
             </div>
           </div>
         </div>
 
-        {/* Estatísticas */}
+        {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
-            title="Total de Posts"
+            title={t('dashboard:totalPosts')}
             value="0"
             icon={
               <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,7 +86,7 @@ export default function DashboardPage() {
             }
           />
           <StatCard
-            title="Transcrições"
+            title={t('dashboard:totalTranscriptions')}
             value="0"
             icon={
               <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +95,7 @@ export default function DashboardPage() {
             }
           />
           <StatCard
-            title="Categorias"
+            title={t('dashboard:categories')}
             value="0"
             icon={
               <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -103,12 +105,12 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Ações rápidas */}
+        {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Ações rápidas</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('dashboard:quickActions')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link 
-              href="/blog/novo"
+              href="/blog/new"
               className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="mr-4 bg-indigo-100 p-3 rounded-full">
@@ -117,12 +119,12 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-medium">Criar Novo Post</h3>
-                <p className="text-sm text-gray-500">Adicione um novo post ao blog</p>
+                <h3 className="font-medium">{t('dashboard:createNewPost')}</h3>
+                <p className="text-sm text-gray-500">{t('dashboard:createNewPostDescription')}</p>
               </div>
             </Link>
             <Link 
-              href="/transcricoes"
+              href="/transcriptions"
               className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <div className="mr-4 bg-indigo-100 p-3 rounded-full">
@@ -131,8 +133,8 @@ export default function DashboardPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-medium">Nova Transcrição</h3>
-                <p className="text-sm text-gray-500">Envie um texto para transcrição</p>
+                <h3 className="font-medium">{t('dashboard:createNewTranscription')}</h3>
+                <p className="text-sm text-gray-500">{t('dashboard:createNewTranscriptionDescription')}</p>
               </div>
             </Link>
           </div>

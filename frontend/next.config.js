@@ -1,4 +1,6 @@
-const { withContentlayer } = require('next-contentlayer');
+/**
+ * Next.js configuration
+ */
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -6,6 +8,6 @@ const nextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
   },
-};
+}
 
-module.exports = withContentlayer(nextConfig); 
+module.exports = nextConfig; 

@@ -1,0 +1,22 @@
+{
+  "welcome": "Welcome",
+  "stats": "Stats",
+  "recentPosts": "Recent Posts",
+  "recentTranscriptions": "Recent Transcriptions",
+  "totalPosts": "Total Posts",
+  "totalDrafts": "Total Drafts",
+  "totalPublished": "Total Published",
+  "totalTranscriptions": "Total Transcriptions",
+  "noPosts": "No posts found",
+  "noTranscriptions": "No transcriptions found",
+  "createNewPost": "Create New Post",
+  "createNewTranscription": "Create New Transcription",
+  "viewAll": "View All",
+  "user": "User",
+  "greeting": "Welcome, {{name}}!",
+  "userAvatar": "User avatar",
+  "categories": "Categories",
+  "quickActions": "Quick Actions",
+  "createNewPostDescription": "Add a new post to your blog",
+  "createNewTranscriptionDescription": "Submit text for transcription"
+} 

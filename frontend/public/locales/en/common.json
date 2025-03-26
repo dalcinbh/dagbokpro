@@ -1,0 +1,102 @@
+{
+  "appName": "Dagbok",
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "loginWith": "Login with",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password",
+    "resetPassword": "Reset password",
+    "name": "Name",
+    "confirmPassword": "Confirm password",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "passwordsDontMatch": "Passwords don't match",
+    "invalidCredentials": "Invalid credentials",
+    "accountCreated": "Account created successfully",
+    "passwordReset": "Password reset successfully",
+    "passwordResetSent": "Password reset link sent to your email",
+    "profile": "Profile",
+    "restrictedAccess": "Restricted Access",
+    "needLogin": "You need to be logged in to access this page",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "blog": "Blog",
+    "about": "About",
+    "contact": "Contact",
+    "profile": "Profile",
+    "settings": "Settings",
+    "posts": "Posts",
+    "newPost": "New Post",
+    "transcriptions": "Transcriptions",
+    "newTranscription": "New Transcription"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved"
+  },
+  "language": {
+    "changeLanguage": "Change Language",
+    "english": "English",
+    "portuguese": "Portuguese",
+    "swedish": "Swedish"
+  },
+  "homepage": {
+    "welcome": "Welcome",
+    "subtitle": "Your personal journal and blog platform",
+    "getStarted": "Get Started",
+    "features": "Features",
+    "multipleLanguages": "Multiple Languages",
+    "languageDescription": "Use Dagbok in your preferred language. Currently supporting English, Portuguese, and Swedish."
+  },
+  "features": {
+    "blog": {
+      "title": "Blog",
+      "description": "Create and share your posts with the world."
+    },
+    "journal": {
+      "title": "Journal",
+      "description": "Keep track of your daily thoughts and activities."
+    },
+    "multilingual": {
+      "title": "Multilingual",
+      "description": "Support for English, Portuguese, and Swedish."
+    },
+    "social": {
+      "title": "Social",
+      "description": "Connect with friends and share your experiences."
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "posts": "Posts",
+    "profile": "Profile",
+    "settings": "Settings",
+    "viewAllPosts": "View all blog posts",
+    "createNewPost": "Create a new blog post"
+  },
+  "toggleMenu": "Toggle Menu"
+} 
