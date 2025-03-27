@@ -6,6 +6,7 @@
 import { createInstance } from 'i18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
+import { useEffect, useState } from 'react';
 
 // Cookie name for storing locale (must match middleware)
 export const COOKIE_NAME = 'NEXT_LOCALE';
@@ -60,7 +61,7 @@ const i18nInstancesCache = new Map();
 /**
  * Initialize i18next instance on client
  */
-export function initI18next(ns: string | string[] = defaultNS) {
+export async function initI18next(ns: string | string[] = defaultNS) {
   if (typeof window === 'undefined') 
     return { 
       t: (key: string) => key, 
@@ -82,7 +83,7 @@ export function initI18next(ns: string | string[] = defaultNS) {
   
   // Create new instance
   const i18nInstance = createInstance();
-  i18nInstance
+  await i18nInstance
     .use(initReactI18next)
     .use(
       resourcesToBackend(
@@ -104,7 +105,16 @@ export function initI18next(ns: string | string[] = defaultNS) {
       react: {
         useSuspense: false,
       },
+      // Ensure resources are loaded before initialization
+      initImmediate: false,
     });
+
+  // Wait for translations to be loaded
+  await Promise.all(
+    (Array.isArray(ns) ? ns : [ns]).map(namespace =>
+      i18nInstance.loadNamespaces(namespace)
+    )
+  );
 
   const instance = {
     t: i18nInstance.getFixedT(lng, ns),
@@ -121,22 +131,39 @@ export function initI18next(ns: string | string[] = defaultNS) {
  * Hook to use translations in client components
  */
 export function useTranslation(ns: string | string[] = defaultNS) {
-  if (typeof window === 'undefined') {
-    // Server-side rendering placeholder
-    return { 
-      t: (key: string) => key, 
-      i18n: {
-        language: DEFAULT_LOCALE,
-        changeLanguage: () => Promise.resolve(),
+  const [instance, setInstance] = useState<any>({
+    t: (key: string) => key,
+    i18n: {
+      language: DEFAULT_LOCALE,
+      changeLanguage: () => Promise.resolve(),
+    },
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const init = async () => {
+      try {
+        const i18nInstance = await initI18next(ns);
+        if (isMounted) {
+          setInstance(i18nInstance);
+        }
+      } catch (error) {
+        console.error('Failed to initialize i18n:', error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
-  }
 
-  // For multiple namespaces
-  if (Array.isArray(ns)) {
-    return initI18next(ns);
-  }
-  
-  // For single namespace
-  return initI18next(ns);
+    init();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [ns]);
+
+  return { ...instance, isLoading };
 } 
