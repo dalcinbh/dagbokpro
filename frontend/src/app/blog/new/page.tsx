@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
 /**
  * New Post Page
@@ -18,16 +21,25 @@ export default function NewPost() {
   const [category, setCategory] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const { t, i18n } = useTranslation(['blog', 'common']);
+
+  useEffect(() => {
+    // Wait for both session and translations to be ready
+    if (status !== 'loading') {
+      setIsLoading(false);
+    }
+  }, [status]);
 
   // Available categories for the post
   const categories = [
-    { id: 'technology', name: 'Technology' },
-    { id: 'health', name: 'Health' },
-    { id: 'business', name: 'Business' },
-    { id: 'lifestyle', name: 'Lifestyle' },
-    { id: 'education', name: 'Education' }
+    { id: 'technology', name: t('categories.technology', { ns: 'blog' }) },
+    { id: 'health', name: t('categories.health', { ns: 'blog' }) },
+    { id: 'business', name: t('categories.business', { ns: 'blog' }) },
+    { id: 'lifestyle', name: t('categories.lifestyle', { ns: 'blog' }) },
+    { id: 'education', name: t('categories.education', { ns: 'blog' }) }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,40 +80,48 @@ export default function NewPost() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[70vh]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
   // Check authentication
-  if (!session) {
+  if (!session && !isLoading) {
     return (
       <div className="flex justify-center items-center h-[70vh]">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Restricted Access</h1>
-          <p className="mb-4">You need to be logged in to create a new post.</p>
-          <Button onClick={() => router.push('/login')}>Login</Button>
+          <h1 className="text-2xl font-bold mb-4">{t('restrictedAccess', { ns: 'common' })}</h1>
+          <p className="mb-4">{t('loginRequired', { ns: 'blog' })}</p>
+          <Button onClick={() => router.push('/login')}>{t('login', { ns: 'common' })}</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container max-w-4xl py-8">
-      <h1 className="text-3xl font-bold mb-6">New Post</h1>
+    <div className="container max-w-4xl py-8 flex flex-col items-center ml-9">
+      <h1 className="text-3xl font-bold mb-6">{t('createPost', { ns: 'blog' })}</h1>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 w-full">
         <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title">{t('title', { ns: 'blog' })}</Label>
           <Input
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter post title"
+            placeholder={t('enterTitle', { ns: 'blog' })}
             className="w-full"
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
+          <Label htmlFor="category">{t('category', { ns: 'blog' })}</Label>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a category" />
+              <SelectValue placeholder={t('selectCategory', { ns: 'blog' })} />
             </SelectTrigger>
             <SelectContent>
               {categories.map((cat) => (
@@ -114,12 +134,12 @@ export default function NewPost() {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="content">Content</Label>
+          <Label htmlFor="content">{t('postContent', { ns: 'blog' })}</Label>
           <div className="relative">
             <RichTextEditor
               content={content}
               onChange={setContent}
-              placeholder="Write your post content..."
+              placeholder={t('writeContent', { ns: 'blog' })}
             />
           </div>
         </div>
@@ -130,7 +150,7 @@ export default function NewPost() {
             disabled={isSubmitting}
             className="px-6"
           >
-            {isSubmitting ? 'Publishing...' : 'Publish'}
+            {isSubmitting ? t('publishing', { ns: 'blog' }) : t('publish', { ns: 'blog' })}
           </Button>
         </div>
       </form>

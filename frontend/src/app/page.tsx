@@ -1,134 +1,90 @@
 /**
- * Homepage component
- * Displays welcome message and main features in user's selected language
+ * Root page with social login
  */
-
 'use client';
 
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { signInWithGoogle, signInWithGitHub, signInWithLinkedIn } from '@/lib/auth';
 import { useTranslation } from '@/i18n';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { CalendarDays, Edit, Globe, Users } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
-export default function HomePage() {
-  const { t } = useTranslation('common');
+export default function Home() {
+  const { data: session } = useSession();
+  const { t, isLoading } = useTranslation('common');
 
-  const features = [
-    {
-      icon: <Edit className="h-10 w-10 text-primary" />,
-      title: t('features.blog.title'),
-      description: t('features.blog.description'),
-    },
-    {
-      icon: <CalendarDays className="h-10 w-10 text-primary" />,
-      title: t('features.journal.title'),
-      description: t('features.journal.description'),
-    },
-    {
-      icon: <Globe className="h-10 w-10 text-primary" />,
-      title: t('features.multilingual.title'),
-      description: t('features.multilingual.description'),
-    },
-    {
-      icon: <Users className="h-10 w-10 text-primary" />,
-      title: t('features.social.title'),
-      description: t('features.social.description'),
-    },
-  ];
+  if (session) {
+    redirect('/dashboard');
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+        <span className="mt-2 text-sm text-gray-500">Loading...</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col">
-      {/* Hero section */}
-      <section className="relative">
-        <div className="container mx-auto px-4 py-16 text-center lg:py-32">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-            {t('appName')}
-          </h1>
-          <p className="mt-4 text-xl text-muted-foreground sm:text-2xl">
-            {t('homepage.welcome')} - {t('homepage.subtitle')}
-          </p>
-          <div className="mt-8 flex justify-center gap-4">
-            <Button asChild size="lg">
-              <Link href="/dashboard">{t('nav.dashboard')}</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/api/auth/signin">{t('auth.login')}</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h1 className="text-center text-3xl font-extrabold text-gray-900 mb-2">
+          Dagbok
+        </h1>
+        <h2 className="text-center text-sm text-gray-600">
+          {t('auth.chooseProvider')}
+        </h2>
+      </div>
 
-      {/* Features section */}
-      <section className="bg-muted py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold tracking-tight">
-            {t('homepage.features')}
-          </h2>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center rounded-lg bg-card p-6 text-center shadow-sm"
-              >
-                <div className="mb-4 rounded-full bg-primary/10 p-3">
-                  {feature.icon}
-                </div>
-                <h3 className="mb-2 text-xl font-medium">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="space-y-4">
+            <button
+              onClick={() => signInWithGoogle()}
+              className="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <Image
+                src="/google.svg"
+                alt="Google"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
+              {t('auth.continueWithGoogle')}
+            </button>
 
-      {/* Multilingual section */}
-      <section className="py-16">
-        <div className="container mx-auto flex flex-col items-center px-4 text-center">
-          <h2 className="mb-8 text-3xl font-bold tracking-tight">
-            {t('homepage.multipleLanguages')}
-          </h2>
-          <p className="mb-10 max-w-2xl text-xl text-muted-foreground">
-            {t('homepage.languageDescription')}
-          </p>
-          <div className="flex flex-wrap justify-center gap-8">
-            <div className="flex items-center space-x-2">
-              <div className="relative h-12 w-16 overflow-hidden rounded">
-                <Image
-                  src="/flags/us.svg"
-                  alt="US Flag"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-              <span className="text-lg font-medium">{t('language.english')}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="relative h-12 w-16 overflow-hidden rounded">
-                <Image
-                  src="/flags/br.svg"
-                  alt="Brazil Flag"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-              <span className="text-lg font-medium">{t('language.portuguese')}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="relative h-12 w-16 overflow-hidden rounded">
-                <Image
-                  src="/flags/se.svg"
-                  alt="Sweden Flag"
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-              <span className="text-lg font-medium">{t('language.swedish')}</span>
-            </div>
+            <button
+              onClick={() => signInWithGitHub()}
+              className="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <Image
+                src="/github.svg"
+                alt="GitHub"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
+              {t('auth.continueWithGitHub')}
+            </button>
+
+            <button
+              onClick={() => signInWithLinkedIn()}
+              className="w-full flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <Image
+                src="/linkedin.svg"
+                alt="LinkedIn"
+                width={20}
+                height={20}
+                className="mr-2"
+              />
+              {t('auth.continueWithLinkedIn')}
+            </button>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
-}
+} 

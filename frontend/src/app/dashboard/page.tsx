@@ -10,134 +10,139 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/i18n';
 import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout';
-
-/**
- * Stat Card component
- */
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-}
-
-function StatCard({ title, value, icon }: StatCardProps) {
-  return (
-    <div className="bg-white rounded-lg shadow p-6 flex items-center">
-      <div className="mr-4 bg-indigo-100 rounded-full p-3">
-        {icon}
-      </div>
-      <div>
-        <h3 className="text-gray-500 text-sm font-medium">{title}</h3>
-        <p className="text-2xl font-bold">{value}</p>
-      </div>
-    </div>
-  );
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { FilePlus, Users, FileText, Calendar } from 'lucide-react';
 
 /**
  * Main Dashboard Page
  */
 export default function DashboardPage() {
   const { data: session } = useSession();
-  const { t } = useTranslation(['dashboard', 'common']);
+  const { t, isLoading } = useTranslation(['dashboard', 'common']);
   const user = session?.user;
+
+  // Stats data (in a real app, this would come from an API)
+  const stats = {
+    totalPosts: 0,
+    totalDrafts: 0,
+    totalPublished: 0,
+    totalTranscriptions: 0,
+  };
+
+  // Show loading state while translations are loading
+  if (isLoading) {
+    return (
+      <AuthenticatedLayout>
+        <div className="flex h-full items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <p className="mt-4">Loading...</p>
+          </div>
+        </div>
+      </AuthenticatedLayout>
+    );
+  }
 
   return (
     <AuthenticatedLayout>
       <div className="space-y-8">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 mr-4">
-              {user?.image ? (
-                <Image
-                  src={user.image}
-                  alt={user.name || t('dashboard:userAvatar')}
-                  width={64}
-                  height={64}
-                  className="rounded-full"
-                />
-              ) : (
-                <div className="w-16 h-16 bg-indigo-200 rounded-full flex items-center justify-center">
-                  <span className="text-xl font-bold text-indigo-600">
-                    {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {t('dashboard:greeting', { name: user?.name || user?.email?.split('@')[0] || t('dashboard:user') })}
-              </h1>
-              <p className="text-gray-600">{user?.email}</p>
-            </div>
+        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {t('dashboard:greeting', { name: user?.name || user?.email?.split('@')[0] || t('dashboard:user') })}
+            </h1>
+            <p className="text-muted-foreground">
+              {t('dashboard:subtitle')}
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button asChild>
+              <Link href="/blog/new">
+                <FilePlus className="mr-2 h-4 w-4" />
+                {t('dashboard:createNewPost')}
+              </Link>
+            </Button>
           </div>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard
-            title={t('dashboard:totalPosts')}
-            value="0"
-            icon={
-              <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
-            }
-          />
-          <StatCard
-            title={t('dashboard:totalTranscriptions')}
-            value="0"
-            icon={
-              <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            }
-          />
-          <StatCard
-            title={t('dashboard:categories')}
-            value="0"
-            icon={
-              <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-            }
-          />
+        {/* Stats Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('dashboard:totalPosts')}
+              </CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalPosts}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('dashboard:totalDrafts')}
+              </CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalDrafts}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('dashboard:totalPublished')}
+              </CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalPublished}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {t('dashboard:totalTranscriptions')}
+              </CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalTranscriptions}</div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">{t('dashboard:quickActions')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link 
-              href="/blog/new"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="mr-4 bg-indigo-100 p-3 rounded-full">
-                <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('dashboard:quickActions')}</CardTitle>
+              <CardDescription>
+                {t('dashboard:quickActionsDescription')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="flex items-center space-x-4">
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/blog/new" className="flex items-center">
+                    <FilePlus className="mr-2 h-4 w-4" />
+                    {t('dashboard:createNewPost')}
+                  </Link>
+                </Button>
               </div>
-              <div>
-                <h3 className="font-medium">{t('dashboard:createNewPost')}</h3>
-                <p className="text-sm text-gray-500">{t('dashboard:createNewPostDescription')}</p>
+              <div className="flex items-center space-x-4">
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/transcriptions/new" className="flex items-center">
+                    <Users className="mr-2 h-4 w-4" />
+                    {t('dashboard:createNewTranscription')}
+                  </Link>
+                </Button>
               </div>
-            </Link>
-            <Link 
-              href="/transcriptions"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <div className="mr-4 bg-indigo-100 p-3 rounded-full">
-                <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium">{t('dashboard:createNewTranscription')}</h3>
-                <p className="text-sm text-gray-500">{t('dashboard:createNewTranscriptionDescription')}</p>
-              </div>
-            </Link>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AuthenticatedLayout>

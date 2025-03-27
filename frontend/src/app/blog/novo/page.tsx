@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
+import AuthenticatedLayout from '@/components/layouts/AuthenticatedLayout';
 
 const categories = [
   'Carta de Apresentação',
@@ -43,6 +45,7 @@ export default function NewPostPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<PostFormData>({
     resolver: zodResolver(postSchema)
   });
+  const { t } = useTranslation();
 
   const onSubmit = async (data: PostFormData) => {
     try {
@@ -53,7 +56,7 @@ export default function NewPostPage() {
         },
         body: JSON.stringify({
           ...data,
-          userId: session?.user?.id
+          userId: session?.user?.email
         }),
       });
 
@@ -68,64 +71,72 @@ export default function NewPostPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Novo Post</h1>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl">
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Título
-          </label>
-          <input
-            {...register('title')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-          {errors.title && (
-            <p className="text-red-500 text-xs italic">{errors.title.message}</p>
-          )}
+    <AuthenticatedLayout>
+      <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-4 md:px-6 lg:px-8">
+        <div className="flex items-center justify-between border-b pb-4">
+          <h1 className="text-2xl font-semibold tracking-tight">{t('blog:createPost')}</h1>
         </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Categoria
-          </label>
-          <select
-            {...register('category')}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          >
-            <option value="">Selecione uma categoria</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          {errors.category && (
-            <p className="text-red-500 text-xs italic">{errors.category.message}</p>
-          )}
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              {t('blog:title')}
+            </label>
+            <input
+              {...register('title')}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder={t('blog:enterTitle')}
+            />
+            {errors.title && (
+              <p className="text-sm font-medium text-destructive">{errors.title.message}</p>
+            )}
+          </div>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Conteúdo
-          </label>
-          <textarea
-            {...register('content')}
-            rows={10}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-          {errors.content && (
-            <p className="text-red-500 text-xs italic">{errors.content.message}</p>
-          )}
-        </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              {t('blog:category')}
+            </label>
+            <select
+              {...register('category')}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">{t('blog:selectCategory')}</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="text-sm font-medium text-destructive">{errors.category.message}</p>
+            )}
+          </div>
 
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Publicar
-        </button>
-      </form>
-    </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              {t('blog:postContent')}
+            </label>
+            <textarea
+              {...register('content')}
+              rows={10}
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder={t('blog:writeContent')}
+            />
+            {errors.content && (
+              <p className="text-sm font-medium text-destructive">{errors.content.message}</p>
+            )}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            >
+              {t('blog:publish')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </AuthenticatedLayout>
   );
 } 

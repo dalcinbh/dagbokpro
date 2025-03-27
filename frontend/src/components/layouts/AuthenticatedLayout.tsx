@@ -7,7 +7,7 @@
 
 import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { useTranslation } from '@/i18n';
 import Navigation from '@/components/Navigation';
 
@@ -19,47 +19,36 @@ interface AuthenticatedLayoutProps {
 }
 
 /**
- * Layout for pages that require authentication
- * Redirects to the login page if not authenticated
+ * Authenticated layout component
+ * Wraps pages that require authentication
  */
 export default function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   const { data: session, status } = useSession();
-  const router = useRouter();
-  const { t } = useTranslation('common');
+  const { t, isLoading } = useTranslation(['common']);
 
-  // Check authentication and redirect to login if necessary
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/api/auth/signin');
-    }
-  }, [status, router]);
-
-  // Display a loading state while checking authentication
-  if (status === 'loading') {
+  // Handle loading state
+  if (status === 'loading' || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-16 h-16 border-4 border-indigo-500 border-solid rounded-full border-t-transparent animate-spin"></div>
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <p className="mt-4">Loading...</p>
+        </div>
       </div>
     );
   }
 
-  // If not authenticated, don't render content
+  // Redirect to login if not authenticated
   if (status === 'unauthenticated') {
-    return null;
+    redirect('/api/auth/signin');
   }
 
-  // Render layout with navigation for authenticated users
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8">
         {children}
       </main>
-      <footer className="bg-white py-6 border-t">
-        <div className="container mx-auto px-4 text-center text-gray-600 text-sm">
-          &copy; {new Date().getFullYear()} {t('appName')} - {t('footer.allRightsReserved')}
-        </div>
-      </footer>
     </div>
   );
 } 
