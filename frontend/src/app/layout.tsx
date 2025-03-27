@@ -50,7 +50,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 <Link href="/" className="flex items-center space-x-2">
                   <CalendarDays className="h-6 w-6" />

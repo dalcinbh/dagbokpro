@@ -110,7 +110,11 @@ export default function LanguageSelector() {
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="z-50">
+      <DropdownMenuContent 
+        align="end" 
+        className="z-[60] bg-white" 
+        sideOffset={8}
+      >
         {LOCALES.map((code) => (
           <DropdownMenuItem
             key={code}

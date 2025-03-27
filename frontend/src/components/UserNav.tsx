@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { useTranslation } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -23,7 +23,7 @@ import { User, LogOut, Settings } from 'lucide-react';
 
 export default function UserNav() {
   const { data: session, status } = useSession();
-  const { t } = useLanguage();
+  const { t } = useTranslation(['common']);
   const isLoading = status === 'loading';
   const isAuthenticated = status === 'authenticated';
 
@@ -58,7 +58,12 @@ export default function UserNav() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent 
+        className="w-56 bg-white" 
+        align="end" 
+        forceMount
+        sideOffset={8}
+      >
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
@@ -71,13 +76,13 @@ export default function UserNav() {
         <DropdownMenuItem asChild>
           <Link href="/dashboard" className="flex items-center">
             <User className="mr-2 h-4 w-4" />
-            <span>{t.nav.dashboard}</span>
+            <span>{t('common:navigation.dashboard')}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/dashboard/profile" className="flex items-center">
             <Settings className="mr-2 h-4 w-4" />
-            <span>{t.nav.profile}</span>
+            <span>{t('common:navigation.profile')}</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -86,7 +91,7 @@ export default function UserNav() {
           onClick={() => signOut({ callbackUrl: '/' })}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>{t.common.logout}</span>
+          <span>{t('common:auth.signOut')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
