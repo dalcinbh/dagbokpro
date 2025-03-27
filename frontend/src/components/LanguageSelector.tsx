@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import { COOKIE_NAME, LOCALES } from '@/i18n';
 
 // Language data with flag images
@@ -40,6 +40,7 @@ const languages = {
 export default function LanguageSelector() {
   const pathname = usePathname();
   const [currentLocale, setCurrentLocale] = useState('en');
+  const [isLoading, setIsLoading] = useState(true);
   
   // Initialize with the current language on mount
   useEffect(() => {
@@ -57,10 +58,13 @@ export default function LanguageSelector() {
     
     const lang = (cookieLang || localStorageLang || 'en') as keyof typeof languages;
     setCurrentLocale(LOCALES.includes(lang as string) ? lang as string : 'en');
+    setIsLoading(false);
   }, []);
 
   // Change language handler
   const changeLanguage = (locale: string) => {
+    setIsLoading(true);
+    
     // Set cookie
     document.cookie = `${COOKIE_NAME}=${locale}; path=/; max-age=31536000`; // 1 year
     
@@ -78,6 +82,16 @@ export default function LanguageSelector() {
 
   const currentLanguage = languages[currentLocale as keyof typeof languages] || languages.en;
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <Button variant="ghost" size="sm" disabled className="flex items-center gap-2">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        <span className="sr-only">Loading...</span>
+      </Button>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -89,13 +103,14 @@ export default function LanguageSelector() {
               width={20}
               height={20}
               className="object-cover"
+              priority
             />
           </div>
           <span className="hidden md:inline">{currentLanguage.name}</span>
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="z-50">
         {LOCALES.map((code) => (
           <DropdownMenuItem
             key={code}
@@ -111,6 +126,7 @@ export default function LanguageSelector() {
                 width={20}
                 height={20}
                 className="object-cover"
+                priority
               />
             </div>
             <span>{languages[code as keyof typeof languages].name}</span>

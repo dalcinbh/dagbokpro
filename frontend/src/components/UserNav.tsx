@@ -1,7 +1,7 @@
 /**
  * User navigation component
- * Shows login button when not authenticated
  * Shows user profile and logout when authenticated
+ * Shows nothing when not authenticated
  */
 
 'use client';
@@ -27,22 +27,9 @@ export default function UserNav() {
   const isLoading = status === 'loading';
   const isAuthenticated = status === 'authenticated';
 
-  // Show login button if not authenticated
-  if (!isAuthenticated && !isLoading) {
-    return (
-      <Button asChild variant="outline" size="sm">
-        <Link href="/api/auth/signin">{t.auth.login}</Link>
-      </Button>
-    );
-  }
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <Button disabled variant="outline" size="sm">
-        {t.common.loading}
-      </Button>
-    );
+  // Show nothing if not authenticated or loading
+  if (!isAuthenticated || isLoading) {
+    return null;
   }
 
   // Get user initials for avatar fallback

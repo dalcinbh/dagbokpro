@@ -22,8 +22,8 @@ const inter = Inter({ subsets: ['latin'] });
  * @property {string} description - A brief description of the application.
  */
 export const metadata: Metadata = {
-  title: 'Dagbok - Seu Diário Digital',
-  description: 'Plataforma para gerenciamento de conteúdo e transcrições',
+  title: 'Dagbok',
+  description: 'Your personal journal and resume builder',
 };
 
 /**
@@ -37,10 +37,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Disable React DevTools message
+            if (typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'object') {
+              window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject = function () {};
+            }
+          `
+        }} />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <header className="border-b">
+            <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 <Link href="/" className="flex items-center space-x-2">
                   <CalendarDays className="h-6 w-6" />

@@ -125,7 +125,7 @@ export default function Layout({ children }: LayoutProps) {
           )}
           <div className="ml-auto flex items-center space-x-4">
             <LanguageSelector />
-            {isAuthenticated ? (
+            {isAuthenticated && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
@@ -174,10 +174,6 @@ export default function Layout({ children }: LayoutProps) {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Button asChild size="sm">
-                <Link href="/api/auth/signin">{t('common:auth.signIn')}</Link>
-              </Button>
             )}
           </div>
         </div>
